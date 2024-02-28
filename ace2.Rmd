@@ -1,0 +1,16 @@
+---
+title: "Ace2 PCR results, Culex pipiens complex"
+author: "Norah Saarman"
+date: "2024-02-27"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## PCR results
+
+```{r}
+ace_results <- read.csv("VecTechAce2Results_27Feb2024.csv")
+```
