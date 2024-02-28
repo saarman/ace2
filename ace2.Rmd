@@ -14,3 +14,87 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ace_results <- read.csv("VecTechAce2Results_27Feb2024.csv")
 ```
+
+Allele frequencies for each locality
+
+```{r}
+table(ace_results$Species,ace_results$Locality)
+```
+Genotypes in p/q notation, pipiens = pp, quinquefasciatus = qq, 
+
+```{r}
+# genotype df
+df_geno <- data.frame(sampleID = ace_results$SampleID, locality = paste0(substr(ace_results$SampleID,1,3),"-",substr(ace_results$SampleID,4,5)), genotype = ace_results$Species, latitude = ace_results$Latitude, longitude = ace_results$Longitude)
+
+df_geno$genotype[df_geno$genotype == "Culex pipiens pipiens"] <- "pp"
+df_geno$genotype[df_geno$genotype == "hybrid"] <- "pq"
+df_geno$genotype[df_geno$genotype == "Culex quenquefasciatus"] <- "qq"
+
+df_geno
+
+table(df_geno[,2:3])
+```
+
+## Pie charts on a map
+
+Install any packages you don't already have
+install.packages("LEA")
+
+Load all the packages you might need:
+
+library(LEA)
+library(fields)
+library(RColorBrewer)
+library(mapplots)
+library(maptools)
+library(raster)
+library(rgdal)
+library(maptools)
+source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
+
+
+One pie chart at a time:
+```{r}
+tab <- table(df_geno[,2:3])
+
+dimnames(tab)$locality
+
+for (i in dimnames(tab)$locality){
+  pie(tab[i,], main=i,col=c("black","grey","white"),radius=.8,clockwise=TRUE,labels=c("pp", "pq", "qq"))
+}
+```
+
+#put on the map:
+dev.off()
+
+#read in coordinate pop file which also contains the sample sizes for each pie chart
+coord.pop = read.table("spiroplasma_updated.coord")
+coord.pop
+
+#read in the sample proportion spiroplasma positive and negative in two columns
+qpop = read.table("spiroplasma-pies_updated.txt")
+qpop = as.matrix(qpop)
+qpop
+
+#define the reaches of your map
+coord = read.table("spiroplasma_updated.coord")
+plot(coord, xlab = "Longitude", ylab = "Latitude", type = "n")
+plot(coord)
+
+Uganda = read.csv("Uganda.csv")
+Uganda
+library(maps)
+library(mapdata)
+map("worldHires","Uganda")
+points(Uganda$longitude, Uganda$latitude,col="red",cex=0.6)
+points(coord)
+#add background map of the world.
+map(add = T, col = "grey90", fill = TRUE)
+
+
+#add in pie charts
+for (i in 1:33){
+  add.pie(z = qpop[i,],coord.pop[i,3], x = coord.pop[i,1], y = coord.pop[i,2], clockwise=TRUE, labels = "", col = c("red","yellow"))
+}
+
