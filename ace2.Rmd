@@ -61,40 +61,46 @@ tab <- table(df_geno[,2:3])
 dimnames(tab)$locality
 
 for (i in dimnames(tab)$locality){
-  pie(tab[i,], main=i,col=c("black","grey","white"),radius=.8,clockwise=TRUE,labels=c("pp", "pq", "qq"))
+  pie(tab[i,], main=i,col=c("black","grey","white"),radius=.8,clockwise=TRUE,labels = NA)
 }
 ```
+convert to frequencies
+```{r}
+table <- tab
 
-#put on the map:
-dev.off()
+#read in the sample proportion of each genotype into three columns
+for (i in 1:length(tab[,1])){
+  tab[i,] <- tab[i,]/sum(tab[i,])
+}
 
-#read in coordinate pop file which also contains the sample sizes for each pie chart
-coord.pop = read.table("spiroplasma_updated.coord")
-coord.pop
+tab
+```
 
-#read in the sample proportion spiroplasma positive and negative in two columns
-qpop = read.table("spiroplasma-pies_updated.txt")
-qpop = as.matrix(qpop)
-qpop
 
-#define the reaches of your map
-coord = read.table("spiroplasma_updated.coord")
-plot(coord, xlab = "Longitude", ylab = "Latitude", type = "n")
-plot(coord)
+define the reaches of your map
+```{r}
+coord = unique(df_geno[,c(5,4)])
+rownames(coord) <- unique(df_geno[,2])
 
-Uganda = read.csv("Uganda.csv")
-Uganda
+plot(coord, xlab = "Longitude", ylab = "Latitude")
+
 library(maps)
 library(mapdata)
-map("worldHires","Uganda")
-points(Uganda$longitude, Uganda$latitude,col="red",cex=0.6)
-points(coord)
+map("worldHires","USA")
+map(add = T, col = "grey90", fill = TRUE)
+points(coord,col="red",cex=0.6)
+
+```
+
+
 #add background map of the world.
 map(add = T, col = "grey90", fill = TRUE)
+
+
 
 
 #add in pie charts
 for (i in 1:33){
   add.pie(z = qpop[i,],coord.pop[i,3], x = coord.pop[i,1], y = coord.pop[i,2], clockwise=TRUE, labels = "", col = c("red","yellow"))
 }
-
+```
