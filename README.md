@@ -51,7 +51,7 @@ You will be asked for your username and token if you are not already signed into
 5) Then use the Git menu in your RStudio Server top right window to change to the remote repository, commit, pull, push, etc.
 
 # ASCII raster file for interpolation
-chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/raster_files
+chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/raster_files  
 /uufs/chpc.utah.edu/common/home/saarman-group1/raster_files/RH.asc
 
 
