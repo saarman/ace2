@@ -90,6 +90,7 @@ map("worldHires","USA")
 map(add = T, col = "grey90", fill = TRUE)
 points(coord,col="red",cex=0.6)
 
+map('state',col = "grey90", fill = TRUE)
 ```
 
 

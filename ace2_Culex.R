@@ -1,0 +1,94 @@
+#"Ace2 PCR results, Culex pipiens complex"
+
+library(maps)
+library(mapdata)
+source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
+library(fields)
+library(mapplots)
+
+
+## PCR results
+ace_results <- read.csv("VecTechAce2Results_27Feb2024.csv")
+
+
+#Allele frequencies for each locality
+table(ace_results$Species,ace_results$Locality)
+
+#Genotypes in p/q notation, pipiens = pp, quinquefasciatus = qq, 
+# genotype df
+df_geno <- data.frame(sampleID = ace_results$SampleID, locality = paste0(substr(ace_results$SampleID,1,3),"-",substr(ace_results$SampleID,4,5)), genotype = ace_results$Species, latitude = ace_results$Latitude, longitude = ace_results$Longitude)
+
+df_geno$genotype[df_geno$genotype == "Culex pipiens pipiens"] <- "pp"
+df_geno$genotype[df_geno$genotype == "hybrid"] <- "pq"
+df_geno$genotype[df_geno$genotype == "Culex quenquefasciatus"] <- "qq"
+
+df_geno
+
+#create table
+table(df_geno[,2:5])
+
+
+## Pie charts on a map
+
+#One pie chart at a time:
+tab <- table(df_geno[,2:3])
+dimnames(tab)$locality
+
+for (i in dimnames(tab)$locality){
+  pie(tab[i,], main=i,col=c("black","grey","white"),radius=.8,clockwise=TRUE,labels = NA)
+}
+
+# convert to frequencies
+table <- tab
+
+#read in the sample proportion of each genotype into three columns
+for (i in 1:length(tab[,1])){
+  tab[i,] <- tab[i,]/sum(tab[i,])
+}
+
+#define the reaches of your map
+
+#create and plot coord = lat,long
+coord <- unique(df_geno[,c(2,5,4)])
+
+plot(coord$longitude, coord$latitude,xlab = "Longitude", ylab = "Latitude")
+
+#plot coords onto map
+map("state", col = "grey90", fill = TRUE)
+points(coord,col="red",cex=0.6)
+
+#get order straight in table
+ordered <- tab[coord$locality,]
+
+#add in pie chartssource("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+for (i in 1:7){
+  add.pie(z = ordered[i,], x = coord[i,2], y = coord[i,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+}
+add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431, y = 39.21137430019763, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+
+# With jittered data points, add in lines to locality
+
+#create and plot coord = lat,long
+coord <- unique(df_geno[,c(2,5,4)])
+plot(coord$longitude, coord$latitude,xlab = "Longitude", ylab = "Latitude")
+
+#plot coords onto map
+map("state", col = "grey90", fill = TRUE)
+points(coord,col="black",pch = 19, cex=0.6)
+
+#get order straight in table
+ordered <- tab[coord$locality,]
+
+#add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+add.pie(z = ordered[1,], x = coord[1,2], y = coord[1,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+add.pie(z = ordered[2,], x = coord[2,2]-6.5, y = coord[2,3]-3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+lines(x = c(coord[2,2]-6.5,coord[2,2]), y = c(coord[2,3]-3.5,coord[2,3]))
+add.pie(z = ordered[3,], x = coord[3,2], y = coord[3,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+add.pie(z = ordered[4,], x = coord[4,2]-6.5, y = coord[4,3]+3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+lines(x = c(coord[4,2]-6.5,coord[4,2]), y = c(coord[4,3]+3.5,coord[4,3]))
+add.pie(z = ordered[5,], x = coord[5,2], y = coord[5,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+add.pie(z = ordered[6,], x = coord[6,2]+6, y = coord[6,3]-3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+lines(x =c(coord[6,2]+6,coord[6,2]), y = c(coord[6,3]-3.5,coord[6,3]))
+add.pie(z = ordered[7,], x = coord[7,2], y = coord[7,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+lines(x =c(-78.42910058623431+3,-78.42910058623431), y = c(39.21137430019763-9,39.21137430019763))
+add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431+3, y = 39.21137430019763-9, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
