@@ -109,7 +109,8 @@ ordered <- tab_id[unique(coord$locality),]
 ordered_coord <- as.data.frame(aggregate(latitude ~ locality, coord, mean))
 ordered_coord$longitude <- as.data.frame(aggregate(longitude ~ locality, coord, mean))$longitude
 
-pdf(width = 8)
+png(file="map-pies.png",
+    width=1200, height=700)
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey90", fill = TRUE)
 # add from data table
@@ -118,7 +119,7 @@ for (i in 1:length(ordered_coord$locality)){
 }
 # add from Andrea's extra locality 
 #add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431, y = 39.21137430019763, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-
+dev.off()
 
 
 
