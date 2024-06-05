@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## PCR results
 
 ```{r}
-ace_results <- read.csv("VecTechAce2Results_27Feb2024.csv")
+ace_results <- read.csv("VecTechAce2Results_5Jun2024.csv")
 ```
 
 Allele frequencies for each locality
@@ -28,7 +28,7 @@ df_geno <- data.frame(sampleID = ace_results$SampleID, locality = paste0(substr(
 
 df_geno$genotype[df_geno$genotype == "Culex pipiens pipiens"] <- "pp"
 df_geno$genotype[df_geno$genotype == "hybrid"] <- "pq"
-df_geno$genotype[df_geno$genotype == "Culex quenquefasciatus"] <- "qq"
+df_geno$genotype[df_geno$genotype == "Culex quinquefasciatus"] <- "qq"
 
 df_geno
 
@@ -76,11 +76,13 @@ for (i in 1:length(tab[,1])){
 tab
 ```
 
-
-define the reaches of your map
+Map by coord
 ```{r}
 coord = unique(df_geno[,c(5,4)])
-rownames(coord) <- unique(df_geno[,2])
+
+dim(coord)
+
+# rownames(coord) <- unique(df_geno[,2]) names has different length
 
 plot(coord, xlab = "Longitude", ylab = "Latitude")
 
@@ -91,6 +93,7 @@ map(add = T, col = "grey90", fill = TRUE)
 points(coord,col="red",cex=0.6)
 
 map('state',col = "grey90", fill = TRUE)
+points(coord,col="red",cex=0.6)
 ```
 
 
