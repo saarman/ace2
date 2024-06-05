@@ -1,5 +1,4 @@
 #"Ace2 PCR results, Culex pipiens complex"
-
 library(maps)
 library(mapdata)
 source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
@@ -9,7 +8,6 @@ library(mapplots)
 
 ## PCR results
 ace_results <- read.csv("VecTechAce2Results_27Feb2024.csv")
-
 
 #Allele frequencies for each locality
 table(ace_results$Species,ace_results$Locality)
