@@ -86,8 +86,10 @@ points(coord$longitude, coord$latitude,col="red",cex=0.6, pch = 3)
 #get order straight in table
 ordered <- tab_sites[coord$site,]
 
+tab_sites[coord$site,]
+
 #make sure coord is correct
-ordered_coord <- coord[coord$site,]
+ordered_coord <- coord[coord$site == coord$site,]
 
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey90", fill = TRUE)
@@ -98,6 +100,12 @@ for (i in 1:length(ordered_coord$site)){
 # add from Andrea's extra locality 
 #add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431, y = 39.21137430019763, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
 
+#put into one dataframe
+df_gps <- as.data.frame.matrix(ordered)
+df_gps$latitude <- ordered_coord$latitude
+df_gps$longitude <- ordered_coord$longitude
+
+write.csv(df_gps,file = "ace2_by_gps.csv")
 
 #######################################
 # Plot Pies onto Map by named locality
@@ -109,21 +117,28 @@ ordered <- tab_id[unique(coord$locality),]
 ordered_coord <- as.data.frame(aggregate(latitude ~ locality, coord, mean))
 ordered_coord$longitude <- as.data.frame(aggregate(longitude ~ locality, coord, mean))$longitude
 
-png(file="map-pies.png",
-    width=1200, height=700)
+
+#create and save plot as png
+#png(file="map-pies.png", width=1200, height=700)
+
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey90", fill = TRUE)
 # add from data table
 for (i in 1:length(ordered_coord$locality)){
-  add.pie(z = ordered[i,], x = ordered_coord$longitude[i], y = ordered_coord$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+  add.pie(z = ordered[i,1:3], x = ordered_coord$longitude[i], y = ordered_coord$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
 }
 # add from Andrea's extra locality 
 #add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431, y = 39.21137430019763, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-dev.off()
 
+#dev.off()
 
+#put into one dataframe
+#put into one dataframe
+df_id <- as.data.frame.matrix(ordered)
+df_id$latitude <- ordered_coord$latitude
+df_id$longitude <- ordered_coord$longitude
 
-
+write.csv(df_id,file = "ace2_by_id.csv")
 
 #######################################
 # Plot Pies onto Map by named locality, with jittered data points, add in lines to locality
