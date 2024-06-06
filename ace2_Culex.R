@@ -138,42 +138,41 @@ df_id <- as.data.frame.matrix(ordered)
 df_id$latitude <- ordered_coord$latitude
 df_id$longitude <- ordered_coord$longitude
 
-write.csv(df_id,file = "ace2_by_id.csv")
+write.csv(df_id,file = "ace2_by_site-id.csv")
 
 #######################################
 # Plot Pies onto Map by named locality, with jittered data points, add in lines to locality
 #######################################
 
-#create and plot coord = lat,long
-coord <- unique(df_geno[,c(2,5,4)])
-plot(coord$longitude, coord$latitude,xlab = "Longitude", ylab = "Latitude")
+# #create and plot coord = lat,long
+length(rownames(df_id))
 
-#plot coords onto map
-map("state", col = "grey90", fill = TRUE)
-points(coord,col="black",pch = 19, cex=0.6)
+# plot coords onto map
+map("state", col = "grey90", fill = TRUE, mar = rep(10, 4))
 
-#get order straight in table
-ordered <- tab[coord$locality,]
+?map()
+#points(df_id$longitude,df_id$latitude,col="black",pch = 19, cex=0.6)
 
-#add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+# add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 # One at a time to allow for added lines:
 #1
-add.pie(z = ordered[1,], x = coord[1,2], y = coord[1,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+x_offset <- (5)
+y_offset <- (2)
+add.pie(z = c(df_id$pp[1],df_id$pq[1],df_id$qq[1]), x = df_id$longitude[1]+x_offset, y = df_id$latitude[1]+y_offset, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+lines(x = c(df_id$longitude[1],df_id$longitude[1]+x_offset), y = c(df_id$latitude[1],df_id$latitude[1]+y_offset))
 #2 
-add.pie(z = ordered[2,], x = coord[2,2]-6.5, y = coord[2,3]-3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-lines(x = c(coord[2,2]-6.5,coord[2,2]), y = c(coord[2,3]-3.5,coord[2,3]))
-#3
-add.pie(z = ordered[3,], x = coord[3,2], y = coord[3,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-#4
-add.pie(z = ordered[4,], x = coord[4,2]-6.5, y = coord[4,3]+3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-lines(x = c(coord[4,2]-6.5,coord[4,2]), y = c(coord[4,3]+3.5,coord[4,3]))
-#5
-add.pie(z = ordered[5,], x = coord[5,2], y = coord[5,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-#6
-add.pie(z = ordered[6,], x = coord[6,2]+6, y = coord[6,3]-3.5, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-lines(x =c(coord[6,2]+6,coord[6,2]), y = c(coord[6,3]-3.5,coord[6,3]))
-#Andreas
-#add.pie(z = ordered[7,], x = coord[7,2], y = coord[7,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
-lines(x =c(-78.42910058623431+3,-78.42910058623431), y = c(39.21137430019763-9,39.21137430019763))
-#Andreas
-add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431+3, y = 39.21137430019763-9, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+x_offset <- (5)
+y_offset <- (2)
+add.pie(z = c(df_id$pp[2],df_id$pq[2],df_id$qq[2]), x = df_id$longitude[2]+x_offset, y = df_id$latitude[2]+y_offset, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+lines(x = c(df_id$longitude[2],df_id$longitude[2]+x_offset), y = c(df_id$latitude[2],df_id$latitude[2]+y_offset))
+
+#etc.
+
+
+
+# #Andrea's
+# #add.pie(z = ordered[7,], x = coord[7,2], y = coord[7,3], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+# lines(x =c(-78.42910058623431+3,-78.42910058623431), y = c(39.21137430019763-9,39.21137430019763))
+# #Andreas
+# add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431+3, y = 39.21137430019763-9, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
+# 
