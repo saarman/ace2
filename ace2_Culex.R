@@ -119,7 +119,7 @@ ordered_coord$longitude <- as.data.frame(aggregate(longitude ~ locality, coord, 
 
 
 #create and save plot as png
-#png(file="map-pies.png", width=1200, height=700)
+png(file="map-pies.png", width=1200, height=700)
 
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey90", fill = TRUE)
@@ -130,7 +130,7 @@ for (i in 1:length(ordered_coord$locality)){
 # add from Andrea's extra locality 
 #add.pie(z = c(64/87,1/87,10/87), x = -78.42910058623431, y = 39.21137430019763, clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 3, radius = 3 )
 
-#dev.off()
+dev.off()
 
 #put into one dataframe
 #put into one dataframe
@@ -150,9 +150,7 @@ length(rownames(df_id))
 # plot coords onto map
 map("state", col = "grey90", fill = TRUE, mar = rep(10, 4))
 
-?map()
 #points(df_id$longitude,df_id$latitude,col="black",pch = 19, cex=0.6)
-
 # add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 # One at a time to allow for added lines:
 #1
