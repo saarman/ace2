@@ -124,6 +124,7 @@ p4 <- ggplot(data=data, aes(y=pip_suitability,x=pip_freq)) +
   #geom_text(aes(label = data$site), hjust = -.25) +
   geom_point(size=3) +
   scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
   ylab("HSM Cx. pipiens") +
   xlab("Hybrid Index") +
   coord_flip()
@@ -133,6 +134,7 @@ p5 <- ggplot(data=data, aes(y=quinq_suitability,x=pip_freq)) +
   #geom_text(aes(label = data$site), hjust = -.25) +
   geom_point(size=3) +
   scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
   ylab("HSM Cx. quinquefasciatus") +
   xlab(NULL)  +
   coord_flip()
