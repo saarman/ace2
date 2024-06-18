@@ -7,6 +7,7 @@ library(fields)
 library(mapplots)
 library(sp)
 library(classInt)
+library(ggplot2)
 
 # import netCDF files from https://github.com/lanl/culexmaxentmodels
 pip <- brick("culex_pipiens_meansuitability.nc")
@@ -33,6 +34,112 @@ points(sitesSp, pch = 1)
 plot(quinq)
 points(sitesSp, pch = 1)
 
+#############################################
+# Extract suitability at each location
+#############################################
+pip_points <- extract(pip, sitesSp)
+quinq_points <- extract(quinq, sitesSp)
+
+sites_suitability <- cbind(sites, pip_points,quinq_points)
+names(sites_suitability) <- c("site","pp","pq","qq","latitude","longitude","pip_suitability","quinq_suitability")
+
+# calculate habitat ratio and p frequency
+sites_suitability$pip_rel.suitability <- sites_suitability$pip_suitability/(sites_suitability$pip_suitability+sites_suitability$quinq_suitability)
+sites_suitability$pip_freq <- ((sites$pp*2)+(sites$pq))/((sites$pp*2)+(sites$pq)+(sites$qq*2))
+
+# reorder and name rows
+sites_suitability <- sites_suitability[rev(order(sites_suitability$latitude)),]
+rownames(sites_suitability)<- c("01-BYR-WA",
+                            "03-USU-UT",
+                            "02-BAR-MA",
+                            "04-SLC-UT",
+                            "05-HUN-NJ",
+                            "06-SOM-NJ",
+                            "07-SUT-CA",
+                            "09-ROC-MD",
+                            "08-LIN-CA",
+                            "10-MAR-AZ",
+                            "11-COS-TX",
+                            "12-ANA-FL",
+                            "13-MIA-FL")
+
+sites_suitability <- sites_suitability[rev(order(rownames(sites_suitability))),]
+
+#pdf(file="barplots.pdf", width = 8, height = 9)
+par(mfrow = c(1, 3), mar=c(10,10,2,2))
+barplot(sites_suitability$pip_freq,names.arg = rownames(sites_suitability),horiz = T,las=2,xlab="H-Index")
+barplot(sites_suitability$pip_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab = "HSM-pip")
+barplot(sites_suitability$quinq_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab="HSM-quinq")
+#dev.off()
+
+#with ggplot, but i'm not sure I like how it looks
+data <- as.data.frame(sites_suitability)
+data$site <- rownames(sites_suitability)
+
+p1 <- ggplot(data=data, aes(x=site, y=pip_freq)) + 
+  geom_line() +
+  geom_segment(aes(xend=site, yend=0), color="black") + 
+  #geom_text(aes(label = pip_freq), hjust = -.5) +
+  geom_point(size=3) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_x_discrete(limits=data$site) +
+  ylab("Hybrid Index") +
+  xlab("Collection Site") +
+  coord_flip()
+
+p2 <- ggplot(data=data, aes(x=site, y=pip_suitability)) + 
+  geom_line() +
+  geom_segment(aes(xend=site, yend=0), color="black") + 
+  #geom_text(aes(label = pip_freq), hjust = -.5) +
+  geom_point(size=3) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_x_discrete(limits=data$site) +
+  ylab("HSM Cx. pipiens") +
+  xlab(NULL) +
+  coord_flip()
+
+p3 <- ggplot(data=data, aes(x=site, y=quinq_suitability)) + 
+  geom_line() +
+  geom_segment(aes(xend=site, yend=0), color="black") + 
+  #geom_text(aes(label = pip_freq), hjust = -.5) +
+  geom_point(size=3) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_x_discrete(limits=data$site) +
+  ylab("HSM Cx. quinquefasciatus") +
+  xlab(NULL) +
+  coord_flip()
+
+
+library(patchwork)
+#pdf(file="lineplots.pdf", width = 8, height = 6)
+p1 + p2 + p3
+#dev.off()
+
+#############################################
+# Scatter plot of hybrid index versus suitability
+#############################################
+
+p4 <- ggplot(data=data, aes(y=pip_suitability,x=pip_freq)) + 
+  geom_point() +
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  ylab("HSM Cx. pipiens") +
+  xlab("Hybrid Index") +
+  coord_flip()
+
+p5 <- ggplot(data=data, aes(y=quinq_suitability,x=pip_freq)) + 
+  geom_point() +
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  ylab("HSM Cx. quinquefasciatus") +
+  xlab(NULL)  +
+  coord_flip()
+
+#pdf(file="scatterplots.pdf", width = 7.5, height = 4)
+p4 + p5
+#dev.off()
 
 #############################################
 # Plot maps with complementary colors:
@@ -42,12 +149,12 @@ colfuncX <- colorRampPalette(c("white", "#EFCA17", "red"))
 colfuncY <- colorRampPalette(c("white","#0096EC","#701363"))
 #colfuncY <- colorRampPalette(c("#75AFCE","#612576"))
 
-#pdf(file="X.pdf", width = 8, height = 9)
+#pdf(file="pipiens.pdf", width = 8, height = 9)
 plot(pip, main="Cx. pipiens", col=colfuncY(25),frame.plot=F,axes=F,box=F,add=F,legend=T)
 points(sitesSp, pch = 1)
 #dev.off()
 
-#pdf(file="Y.pdf", width = 8, height = 9)
+#pdf(file="quinquefasciatus.pdf", width = 8, height = 9)
 plot(quinq,main="Cx. quinquefasciatus", col=colfuncX(25),frame.plot=F,axes=F,box=F,add=F,legend=T)
 points(sitesSp, pch = 1)
 #dev.off()
@@ -81,12 +188,12 @@ bivariate.map<-function(rasterx, rastery, colormatrix=col.matrix, nquantiles=10)
   quanmean<-getValues(rasterx)
   temp<-data.frame(quanmean, quantile=rep(NA, length(quanmean)))
   brks<-with(temp, quantile(temp,na.rm=T, probs = c(seq(0,1,1/nquantiles))))
-  r1<-within(temp, quantile <- cut(quanmean, breaks = brks, labels = 2:length(brks),include.lowest = TRUE))
+  r1<-within(temp, quantile <- cut(quanmean, breaks = brks, labels = 2:length(brks),include.lowest = FALSE))
   quantr<-data.frame(r1[,2]) 
   quanvar<-getValues(rastery)
   temp<-data.frame(quanvar, quantile=rep(NA, length(quanvar)))
   brks<-with(temp, quantile(temp,na.rm=TRUE, probs = c(seq(0,1,1/nquantiles))))
-  r2<-within(temp, quantile <- cut(quanvar, breaks = brks, labels = 2:length(brks),include.lowest = TRUE))
+  r2<-within(temp, quantile <- cut(quanvar, breaks = brks, labels = 2:length(brks),include.lowest = FALSE))
   quantr2<-data.frame(r2[,2])
   as.numeric.factor<-function(x) {as.numeric(levels(x))[x]}
   col.matrix2<-colormatrix
@@ -109,11 +216,35 @@ bivariate.map<-function(rasterx, rastery, colormatrix=col.matrix, nquantiles=10)
 bivmap<-bivariate.map(quinq,pip,colormatrix=col.matrix, nquantiles=9)
 # Note: go back to the function that generates color matrices and try out new color schemes.
 
-pdf(file="pipiens_vs_quinqs.pdf", width = 8, height = 9)
+#pdf(file="pipiens_vs_quinqs.pdf", width = 8, height = 9)
 plot(bivmap,main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,add=F,legend=F)
 points(sitesSp, pch = 1)
-dev.off()
+#dev.off()
 
-pdf(file="legend.pdf", width = 8, height = 9)
+#pdf(file="legend.pdf", width = 8, height = 9)
 col.matrix<-colmat(nquantiles=9, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
-dev.off()
+#dev.off()
+
+
+#############################################
+# Trunkate the pip and quinq anything below 0.1 --> 0
+#############################################
+pip.trunk <- pip
+pip.trunk[pip.trunk < 0.1] <- NA
+
+quinq.trunk <- quinq 
+quinq.trunk[quinq.trunk < 0.1] <- NA
+
+bivmap.trunk<-bivariate.map(quinq.trunk,pip.trunk,colormatrix=col.matrix, nquantiles=9)
+# Note: go back to the function that generates color matrices and try out new color schemes.
+
+#pdf(file="pipiens_vs_quinqs_trunkated.pdf", width = 8, height = 9)
+plot(bivmap.trunk,main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,add=F,legend=F)
+points(sitesSp, pch = 1)
+#dev.off()
+
+#pdf(file="legend_trunkated.pdf", width = 8, height = 9)
+col.matrix<-colmat(nquantiles=9, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
+#dev.off()
+
+
