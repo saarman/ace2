@@ -143,6 +143,16 @@ p5 <- ggplot(data=data, aes(y=quinq_suitability,x=pip_freq)) +
 p4 + p5
 #dev.off()
 
+
+############################################
+# Linear model fit
+############################################
+
+pip.lm <- lm(pip_freq~pip_suitability, data = sites_suitability)
+
+quinq.lm <- lm(pip_freq~quinq_suitability, data = sites_suitability)
+
+
 #############################################
 # Plot maps with complementary colors:
 #############################################
