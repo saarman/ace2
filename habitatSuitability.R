@@ -149,8 +149,46 @@ p4 + p5
 ############################################
 
 pip.lm <- lm(pip_freq~pip_suitability, data = sites_suitability)
+summary(pip.lm)
+
+#Call:
+#  lm(formula = pip_freq ~ pip_suitability, data = sites_suitability)
+#
+#Residuals:
+#  Min       1Q   Median       3Q      Max 
+#-0.64121 -0.03795  0.04920  0.09788  0.19487 
+#
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)    
+#(Intercept)     -0.07059    0.12916  -0.546    0.596    
+#pip_suitability  1.08937    0.17347   6.280 6.01e-05 ***
+#  ---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.2263 on 11 degrees of freedom
+#Multiple R-squared:  0.7819,	Adjusted R-squared:  0.7621 
+#F-statistic: 39.43 on 1 and 11 DF,  p-value: 6.005e-05
 
 quinq.lm <- lm(pip_freq~quinq_suitability, data = sites_suitability)
+summary(quinq.lm)
+
+#Call:
+#  lm(formula = pip_freq ~ quinq_suitability, data = sites_suitability)
+#
+#Residuals:
+#  Min       1Q   Median       3Q      Max 
+#-0.67159 -0.34451 -0.01923  0.33020  0.52006 
+#
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)   
+#(Intercept)         1.2225     0.3476   3.517  0.00483 **
+#  quinq_suitability  -0.8780     0.4913  -1.787  0.10150   
+#---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.4265 on 11 degrees of freedom
+#Multiple R-squared:  0.225,	Adjusted R-squared:  0.1545 
+#F-statistic: 3.193 on 1 and 11 DF,  p-value: 0.1015
 
 
 #############################################
