@@ -70,7 +70,7 @@ par(mfrow = c(1, 3), mar=c(10,10,2,2))
 barplot(sites_suitability$pip_freq,names.arg = rownames(sites_suitability),horiz = T,las=2,xlab="H-Index")
 barplot(sites_suitability$pip_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab = "HSM-pip")
 barplot(sites_suitability$quinq_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab="HSM-quinq")
-#dev.off()
+dev.off()
 
 #with ggplot, but i'm not sure I like how it looks
 data <- as.data.frame(sites_suitability)
@@ -143,7 +143,6 @@ p5 <- ggplot(data=data, aes(y=quinq_suitability,x=pip_freq)) +
 p4 + p5
 #dev.off()
 
-
 ############################################
 # Linear model fit
 ############################################
@@ -194,25 +193,60 @@ summary(quinq.lm)
 #############################################
 # Plot maps with complementary colors:
 #############################################
-colfuncX <- colorRampPalette(c("white", "#EFCA17", "red"))
+upperleft=rgb(0,150,235, maxColorValue=255)
+upperright=rgb(130,0,80, maxColorValue=255)
+bottomleft="grey"
+bottomright=rgb(255,230,15, maxColorValue=255)
+
+colfuncX <- colorRampPalette(c(bottomleft,upperleft))
+#colfuncX <- colorRampPalette(c("white", "#EFCA17", "red"))
 #colfuncX <- colorRampPalette(c("#FFE50E","#821250"))
-colfuncY <- colorRampPalette(c("white","#0096EC","#701363"))
+colfuncY <- colorRampPalette(c(bottomleft,bottomright))
+#colfuncY <- colorRampPalette(c("white","#0096EC","#701363"))
 #colfuncY <- colorRampPalette(c("#75AFCE","#612576"))
 
+pdf(file="pipiens.pdf", width = 8, height = 9)
+plot(pip, main="Cx. pipiens", col=colfuncX(4),frame.plot=F,axes=F,box=F,add=F,legend=T)
+points(sitesSp, pch = 1)
+dev.off()
+
+pdf(file="quinquefasciatus.pdf", width = 8, height = 9)
+plot(quinq,main="Cx. quinquefasciatus", col=colfuncY(4),frame.plot=F,axes=F,box=F,add=F,legend=T)
+points(sitesSp, pch = 1)
+dev.off()
+
+
+#############################################
+# Trunkate the pip and quinq anything below 0.1 --> NA
+#############################################
+pip.trunk <- pip
+pip.trunk[pip.trunk < 0.1] <- NA
+
 #pdf(file="pipiens.pdf", width = 8, height = 9)
-plot(pip, main="Cx. pipiens", col=colfuncY(25),frame.plot=F,axes=F,box=F,add=F,legend=T)
+plot(pip.trunk, main="Cx. pipiens", col=colfuncX(4),frame.plot=F,axes=F,box=F,add=F,legend=T)
 points(sitesSp, pch = 1)
 #dev.off()
+
+quinq.trunk <- quinq 
+quinq.trunk[quinq.trunk < 0.1] <- NA
 
 #pdf(file="quinquefasciatus.pdf", width = 8, height = 9)
-plot(quinq,main="Cx. quinquefasciatus", col=colfuncX(25),frame.plot=F,axes=F,box=F,add=F,legend=T)
+plot(quinq.trunk,main="Cx. quinquefasciatus", col=colfuncY(4),frame.plot=F,axes=F,box=F,add=F,legend=T)
 points(sitesSp, pch = 1)
 #dev.off()
 
 #############################################
-#create a color matrix for Bivariate map:
+# Bivariate map with new example https://cran.r-project.org/web/packages/biscale/vignettes/biscale.html
 #############################################
-colmat<-function(nquantiles=10, upperleft=rgb(0,150,235, maxColorValue=255), upperright=rgb(130,0,80, maxColorValue=255), bottomleft="grey", bottomright=rgb(255,230,15, maxColorValue=255), xlab="x label", ylab="y label"){
+
+
+
+
+
+#############################################
+#create a color matrix for Bivariate map with Giuseppe's old code
+#############################################
+colmat<-function(nquantiles=4, upperleft=rgb(0,150,235, maxColorValue=255), upperright=rgb(130,0,80, maxColorValue=255), bottomleft="grey", bottomright=rgb(255,230,15, maxColorValue=255), xlab="x label", ylab="y label"){
   my.data<-seq(0,1,.01)
   my.class<-classIntervals(my.data,n=nquantiles,style="quantile")
   my.pal.1<-findColours(my.class,c(upperleft,bottomleft))
@@ -229,12 +263,12 @@ colmat<-function(nquantiles=10, upperleft=rgb(0,150,235, maxColorValue=255), upp
   seqs[1]<-1
   col.matrix<-col.matrix[c(seqs), c(seqs)]}
 
-col.matrix<-colmat(nquantiles=9, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
+col.matrix<-colmat(nquantiles=4, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
 
 #############################################
 #Build bivariate map function:
 #############################################
-bivariate.map<-function(rasterx, rastery, colormatrix=col.matrix, nquantiles=10){
+bivariate.map<-function(rasterx, rastery, colormatrix=col.matrix, nquantiles=4){
   quanmean<-getValues(rasterx)
   temp<-data.frame(quanmean, quantile=rep(NA, length(quanmean)))
   brks<-with(temp, quantile(temp,na.rm=T, probs = c(seq(0,1,1/nquantiles))))
@@ -263,38 +297,34 @@ bivariate.map<-function(rasterx, rastery, colormatrix=col.matrix, nquantiles=10)
 # Use the bivariate.map function with quinq and pip
 #############################################
 
-bivmap<-bivariate.map(quinq,pip,colormatrix=col.matrix, nquantiles=9)
+bivmap<-bivariate.map(quinq,pip,colormatrix=col.matrix, nquantiles=4)
 # Note: go back to the function that generates color matrices and try out new color schemes.
 
 #pdf(file="pipiens_vs_quinqs.pdf", width = 8, height = 9)
-plot(bivmap,main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,add=F,legend=F)
+plot(bivmap,main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,legend=F)
 points(sitesSp, pch = 1)
 #dev.off()
 
 #pdf(file="legend.pdf", width = 8, height = 9)
-col.matrix<-colmat(nquantiles=9, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
+col.matrix<-colmat(nquantiles=4, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
 #dev.off()
 
-
 #############################################
-# Trunkate the pip and quinq anything below 0.1 --> 0
+# Use the bivariate.map function with quinq.trunk and pip.trunk
 #############################################
-pip.trunk <- pip
-pip.trunk[pip.trunk < 0.1] <- NA
-
-quinq.trunk <- quinq 
-quinq.trunk[quinq.trunk < 0.1] <- NA
-
-bivmap.trunk<-bivariate.map(quinq.trunk,pip.trunk,colormatrix=col.matrix, nquantiles=9)
+bivmap.trunk<-bivariate.map(quinq.trunk,pip.trunk,colormatrix=col.matrix, nquantiles=4)
 # Note: go back to the function that generates color matrices and try out new color schemes.
 
 #pdf(file="pipiens_vs_quinqs_trunkated.pdf", width = 8, height = 9)
-plot(bivmap.trunk,main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,add=F,legend=F)
+usa <- pip
+usa[usa > 0] <- 1
+plot(usa,col="grey",frame.plot=F,axes=F,box=F,legend=F)
+plot(bivmap.trunk, main="Cx. pipiens vs Cx. quinquefasciatus", col=as.vector(col.matrix), frame.plot=F,axes=F,box=F,add=T,legend=F)
 points(sitesSp, pch = 1)
 #dev.off()
 
 #pdf(file="legend_trunkated.pdf", width = 8, height = 9)
-col.matrix<-colmat(nquantiles=9, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
+col.matrix<-colmat(nquantiles=4, xlab="Cx. quinquefasciatus", ylab="Cx. pipiens")
 #dev.off()
 
 
