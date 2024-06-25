@@ -1,0 +1,20 @@
+locality,site,pp,pq,qq,latitude,longitude,collection-aprox,collection-year,collection-month
+"Anastasia, FL",ANAFL,0,0,19,29.903108,-81.400743,10/2023-11/2023,2023,Oct-Nov
+"Barnstable County, MA",BARMA,12,0,0,41.793615,-69.994266,8/18/2023,2023,Aug
+"Byron, WA (Big Hill at Byron Pond)",BYRWA,20,0,0,46.193,-119.899,9/26/2023,2023,Sep
+"Benton, WA (Witch Hut at Bryon Pond)",BYRWA,17,2,0,46.192,-119.897,9/26/2023,2023,Sep
+"College Station, TX",COSTX,0,3,17,30.60044,-96.26893,11/11/2023,2023,Nov
+"Hunterdon, NJ",HUNNJ,16,2,1,40.539588,-74.834616,9/12/2023,2023,Sep
+"Lincoln, CA (Sierra Pacific Logdecks)",LINCA,20,0,0,38.87605,-121.29683,9/18/2023,2023,Sep
+"Lincoln, CA (Placer County)",LINCA,18,2,0,38.904465,-121.306331,9/18/2023,2023,Sep
+"Maricopa, AZ",MARAZ,0,0,16,33.0736167,-111.9737667,10/22/2023,2023,Oct
+"Wynwood, Miami, Miami-Dade County, FL",MIAFL,0,0,5,25.80141,-80.19909,11/28/2023-11/29/2023,2023,Nov
+"North Miami Beach, Miami, Miami-Dade County, FL",MIAFL,0,0,4,25.93315,-80.16255,11/28/2023-11/29/2023,2023,Nov
+"Little River, Miami, Miami-Dade County, FL",MIAFL,0,0,5,25.8476,-80.19255,11/28/2023-11/29/2023,2023,Nov
+"South Beach Miami, Miami-Dade County, FL",MIAFL,0,0,5,25.70785,-80.29564,11/28/2023-11/29/2023,2023,Nov
+"Rockville, MD",ROCMD,17,3,0,39.057753,-77.130547,6/6/2023,2023,Jun
+"Salt Lake City, UT (mix of sites)",SLCUT,2,11,7,40.74804853,-111.9678782,9/19/2023,2023,Sep
+"Salt Lake City, UT (Sugarhouse colony)",SLCUT,0,6,13,40.71282617,-111.8525808,9/19/2023,2023,Sep
+"Somerset, NJ",SOMNJ,12,3,0,40.533576,-74.586099,9/20/2023,2023,Sep
+"Sutter-Yuba, CA",STGUT,9,8,1,39.166466,-121.598446,10/10/2023,2023,Sep
+"Cache, UT (Hyde Park)",STGUT,20,0,0,41.79696,-111.82005,10/10/2023,2023,Sep
