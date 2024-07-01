@@ -24,7 +24,7 @@ plot(quinq)
 # Import site sampling points, make spatial for later
 #############################################
 # add sampled points
-sites <- read.csv("ace2_by_site-id.csv")
+sites <- read.csv("ace2_by_site_date.csv")
 sitesSp <- SpatialPoints(coords = cbind(sites$longitude,sites$latitude))
 
 # plot both distributions with sampled points
@@ -40,8 +40,8 @@ points(sitesSp, pch = 1)
 pip_points <- extract(pip, sitesSp)
 quinq_points <- extract(quinq, sitesSp)
 
-sites_suitability <- cbind(sites, pip_points,quinq_points)
-names(sites_suitability) <- c("site","pp","pq","qq","latitude","longitude","pip_suitability","quinq_suitability")
+sites_suitability <- cbind(sites[,1:7], pip_points,quinq_points)
+names(sites_suitability) <- c("locality","site","pp","pq","qq","latitude","longitude","pip_suitability","quinq_suitability")
 
 # calculate habitat ratio and hindex
 sites_suitability$pip_rel.suitability <- sites_suitability$pip_suitability/(sites_suitability$pip_suitability+sites_suitability$quinq_suitability)
@@ -49,19 +49,25 @@ sites_suitability$h_index <- ((sites$pp*2)+(sites$pq))/((sites$pp*2)+(sites$pq)+
 
 # reorder and name rows
 sites_suitability <- sites_suitability[rev(order(sites_suitability$latitude)),]
-rownames(sites_suitability)<- c("01-BYR-WA",
-                            "03-USU-UT",
-                            "02-BAR-MA",
-                            "04-SLC-UT",
-                            "05-HUN-NJ",
-                            "06-SOM-NJ",
-                            "07-SUT-CA",
-                            "09-ROC-MD",
-                            "08-LIN-CA",
-                            "10-MAR-AZ",
-                            "11-COS-TX",
-                            "12-ANA-FL",
-                            "13-MIA-FL")
+rownames(sites_suitability)<- c("01-BYRWA",
+                                "02-COOIL",
+                                "03-USUUT",
+                                "04-BARMA",
+                                "05-SLCUT",
+                                "06-HUNNJ",
+                                "07-SOMNJ",
+                                "08-SUTCA",
+                                "09-ROCMD",
+                                "10-LINCA2",
+                                "11-LINCA1",
+                                "12-STGUT",
+                                "13-PHOAZ",
+                                "14-MARAZ",
+                                "15-COSTX",
+                                "16-SLILA",
+                                "17-ANAFL",
+                                "18-MIAFL")
+
 
 sites_suitability <- sites_suitability[rev(order(rownames(sites_suitability))),]
 
@@ -70,7 +76,7 @@ par(mfrow = c(1, 3), mar=c(10,10,2,2))
 barplot(sites_suitability$h_index,names.arg = rownames(sites_suitability),horiz = T,las=2,xlab="H-Index")
 barplot(sites_suitability$pip_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab = "HSM-pip")
 barplot(sites_suitability$quinq_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab="HSM-quinq")
-dev.off()
+#dev.off()
 
 #with ggplot, but i'm not sure I like how it looks
 data <- as.data.frame(sites_suitability)
@@ -150,7 +156,7 @@ p4 + p5
 pip.lm <- lm(h_index~pip_suitability, data = sites_suitability)
 summary(pip.lm)
 
-#Call:
+#Call: with original 13 sites
 #  lm(formula = h_index ~ pip_suitability, data = sites_suitability)
 #
 #Residuals:
@@ -168,10 +174,28 @@ summary(pip.lm)
 #Multiple R-squared:  0.7819,	Adjusted R-squared:  0.7621 
 #F-statistic: 39.43 on 1 and 11 DF,  p-value: 6.005e-05
 
+# Call: with 18 sites
+#   lm(formula = h_index ~ pip_suitability, data = sites_suitability)
+# 
+# Residuals:
+#   Min       1Q   Median       3Q      Max 
+# -0.48351 -0.01599  0.03042  0.14952  0.19634 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)      -0.1534     0.0969  -1.583    0.133    
+# pip_suitability   1.1905     0.1357   8.770 1.65e-07 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.205 on 16 degrees of freedom
+# Multiple R-squared:  0.8278,	Adjusted R-squared:  0.817 
+# F-statistic: 76.92 on 1 and 16 DF,  p-value: 1.649e-07
+
 quinq.lm <- lm(h_index~quinq_suitability, data = sites_suitability)
 summary(quinq.lm)
 
-#Call:
+#Call: with original 13 sites
 #  lm(formula = h_index ~ quinq_suitability, data = sites_suitability)
 #
 #Residuals:
@@ -189,10 +213,28 @@ summary(quinq.lm)
 #Multiple R-squared:  0.225,	Adjusted R-squared:  0.1545 
 #F-statistic: 3.193 on 1 and 11 DF,  p-value: 0.1015
 
+#Call: with 18 sites
+#  lm(formula = h_index ~ quinq_suitability, data = sites_suitability)
+#
+#Residuals:
+#  Min      1Q  Median      3Q     Max 
+#-0.6663 -0.4717  0.1287  0.4118  0.5756 
+#
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)  
+#(Intercept)         0.9844     0.3565   2.761   0.0139 *
+#  quinq_suitability  -0.5743     0.4848  -1.185   0.2534  
+#---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.4737 on 16 degrees of freedom
+#Multiple R-squared:  0.08065,	Adjusted R-squared:  0.0232 
+#F-statistic: 1.404 on 1 and 16 DF,  p-value: 0.2534
+
 pip.quinq.lm <- lm(h_index~pip_suitability*quinq_suitability, data = sites_suitability)
 summary(pip.quinq.lm)
 
-#Call:
+#Call: with original 13 sites
 #  lm(formula = h_index ~ pip_suitability * quinq_suitability, 
 #     data = sites_suitability)
 #
@@ -213,7 +255,25 @@ summary(pip.quinq.lm)
 #Multiple R-squared:  0.8707,	Adjusted R-squared:  0.8275 
 #F-statistic: 20.19 on 3 and 9 DF,  p-value: 0.0002462
 
-
+#Call: with 18 sites
+#  lm(formula = h_index ~ pip_suitability * quinq_suitability, data = sites_suitability)
+#
+#Residuals:
+#  Min       1Q   Median       3Q      Max 
+#-0.52050 -0.02751  0.02465  0.09867  0.22403 
+#
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)  
+#(Intercept)                       -0.03611    0.42950  -0.084   0.9342  
+#pip_suitability                    1.32852    0.56121   2.367   0.0329 *
+#  quinq_suitability                 -0.15555    0.55114  -0.282   0.7819  
+#pip_suitability:quinq_suitability -0.22370    0.72713  -0.308   0.7629  
+#---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.2031 on 14 degrees of freedom
+#Multiple R-squared:  0.8521,	Adjusted R-squared:  0.8205 
+#F-statistic:  26.9 on 3 and 14 DF,  p-value: 4.528e-06
 
 #############################################
 # Plot maps with complementary colors:
