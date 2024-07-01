@@ -16,10 +16,10 @@ locality,site,pp,pq,qq,latitude,longitude,collection-aprox,collection-year,colle
 "Somerset, NJ",SOMNJ,12,3,0,40.533576,-74.586099,9/20/23,2023,Sep
 "Sutter-Yuba, CA",SUTCA,9,8,1,39.166466,-121.598446,10/11/23,2023,Sep
 "Cache, UT (Hyde Park)",USUUT,20,0,0,41.79696,-111.82005,7/25/23,2023,Sep
-"St. George, Washington County, UT 1",STGUT1,NA,NA,NA,37.179,-113.32,10/10/23,2023,Oct
-"St. George, Washington County, UT 2",STGUT2,NA,NA,NA,37.11096,-113.60856,10/4/23,2023,Oct
-"St. George, Washington County, UT 3",STGUT3,NA,NA,NA,37.12452,-113.54507,9/14/23,2023,Sep
-"Des Plaines, Cook County, IL",COOIL1,NA,NA,NA,42.031763,-87.930871,7/31/23-8/1/23,2023,Jul-Aug
-"Arlington Heights, Cook County, IL",COOIL2,NA,NA,NA,42.060828,-87.98958,7/31/23-8/1/23,2023,Jul-Aug
-"Hunter's Creek Drive, Slidell, LA",SLILA,NA,NA,NA,30.327,-89.749,4/30/24,2024,Apr
-"Phoenix, Maricopa County, AZ",PHOAZ,NA,NA,NA,33.4484367,-112.07414,2/24/24,2024,Feb
+"St. George, Washington County, UT 1",STGUT1,0,0,4,37.179,-113.32,10/10/23,2023,Oct
+"St. George, Washington County, UT 2",STGUT2,0,0,8,37.11096,-113.60856,10/4/23,2023,Oct
+"St. George, Washington County, UT 3",STGUT3,0,0,8,37.12452,-113.54507,9/14/23,2023,Sep
+"Des Plaines, Cook County, IL",COOIL1,9,0,0,42.031763,-87.930871,7/31/23-8/1/23,2023,Jul-Aug
+"Arlington Heights, Cook County, IL",COOIL2,8,0,0,42.060828,-87.98958,7/31/23-8/1/23,2023,Jul-Aug
+"Hunter's Creek Drive, Slidell, LA",SLILA,0,1,18,30.327,-89.749,4/30/24,2024,Apr
+"Phoenix, Maricopa County, AZ",PHOAZ,0,0,20,33.4484367,-112.07414,2/24/24,2024,Feb
