@@ -1,38 +1,52 @@
 Site,Locality,Source,latitude,longitude,collection-aprox,collection-year,collection-month
-BYRWA,"Byron, WA (Byron Pond)",This Study (Ace2),46.193,-119.899,9/26/23,2023,Sep
-COSTX,"College Station, TX",This Study (Ace2),30.60044,-96.26893,11/11/23,2023,Nov
-HUNNJ,"Hunterdon, NJ",This Study (Ace2),40.539588,-74.834616,9/12/23,2023,Sep
-LINCA2,"Lincoln, CA (Lincoln Ranch)",This Study (Ace2),38.904465,-121.306331,9/18/23,2023,Sep
-ROCMD,"Rockville, MD",This Study (Ace2),39.057753,-77.130547,6/6/23,2023,Jun
-SLCUT,"Salt Lake City, UT (mix of sites)",This Study (Ace2),40.74804853,-111.9678782,9/19/23,2023,Sep
-SOMNJ,"Somerset, NJ",This Study (Ace2),40.533576,-74.586099,9/20/23,2023,Sep
-SUTCA,"Sutter-Yuba, CA",This Study (Ace2),39.166466,-121.598446,10/11/23,2023,Sep
-SLILA,"Hunter's Creek Drive, Slidell, LA",This Study (Ace2),30.327,-89.749,4/30/24,2024,Apr
-VAIMS-Kother,"Vaiden, Carrol County, MS","Kothera et al, 2009 (Ace2)",33.333,-89.753,8/1/05,2005,Aug
-BATMS-Kothera,"Batesville, Panola County, MS","Kothera et al, 2009 (Ace2)",34.324,-89.945,8/1/05,2005,Aug
-MEMTN-Kothera,"Memphis, Shelby County, TN (mixed sites)","Kothera et al, 2009 (Ace2)",35.077,-90.06,8/1/05,2005,Aug
-BLYAR-Kothera,"Blytheville, Mississippi County, AR","Kothera et al, 2009 (Ace2)",35.94,-89.911,8/1/05,2005,Aug
-SIKMO-Kothera,"Sikeston, Scott County, MO","Kothera et al, 2009 (Ace2)",36.882,-89.587,8/1/05,2005,Aug
-BENIL-Kothera,"Benton, Franklin County, IL","Kothera et al, 2009 (Ace2)",38,-88.924,8/1/05,2005,Aug
-FRECA-Cornel,"Fresno, CA (unkempt pool)","Cornel et al, 2003 (DV/D ratio)",36.833333,-120,5/1/00,2000,May
-CENCA-Cornel,"Centerville, CA (Kings River seepage)","Cornel et al, 2003 (DV/D ratio)",36.833333,-119.833333,6/1/00,2000,Jun
-REECA-Cornel,"Reedley, CA (Horse ranch trough)","Cornel et al, 2003 (DV/D ratio)",36.666667,-119.833333,8/1/00,2000,Aug
-FAIVA-Huang,"Fairfax, VA","Huang et al, 2011 (Ace2, long approximated, no date provided)",38.854,-77.195,not provided,2007-2010,Jun-Oct
-RALNC-Huang,"Raleigh, NC","Huang et al, 2011 (Ace2, long approximated, no date provided)",35.743,-78.626,not provided,2007-2010,Jun-Oct
-ATLGA-Huang,"Atlanta, GA","Huang et al, 2011 (Ace2, long approximated, no date provided)",33.807,-84.36,not provided,2007-2010,Jun-Oct
-CHICA-Urbanelli,"Chico, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",39.7,-121.79,9/29/92,1992,Sep
-OAKCA-Urbanelli,"Oakley, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",38,-121.738,9/14/92,1992,Sep
-ALACA-Urbanelli,"Alameda, CA","Urbanelli et al, 1997 (DV/D and allozymes, lat and long approximated)",37.7,-122.3,9/4/92,1992,Sep
-NEWCA-Urbanelli,"Newman, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",37.3,-121.017,8/15/92,1992,Aug
-CHOCA-Urbanelli,"Chowchilla, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",37.167,-120.25,10/15/91,1991,Oct
-MADCA-Urbanelli,"Madera, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.85,-120.078,9/30/92,1992,Sep
-KERCA-Urbanelli,"Kerman, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.783,-120.066,10/8/92,1992,Oct
-VISCA-Urbanelli,"Visalia, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.333,-119.303,9/17/92,1992,Sep
-BAKCA-Urbanelli,"Bakersfield, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",35.416,-119.066,9/12/92,1992,Sep
-TRUIL-Kothera,"Trumbull Park, IL","Kothera et al, 2020 (microsatellites)",41.7049,-87.5644,8/1/12,2012,Aug
-SACCA-Barr,"Sacramento County, CA","Barr, 1957 (DV/D, lat and long approximated)",38.62,-121.45,9/23/47,1947,Sep
-STLMO-Barr,"St Louis, MO","Barr, 1957 (DV/D, lat and long approximated)",38.61,-90.26,8/26/52,1952,Aug
-STLIL-Barr,"St Louis East, IL","Barr, 1957 (DV/D, lat and long approximated)",38.64,-90.17,06/01/1944-08/30/1944,1944,June-Sep
-SANJCA-Barr,"San Juaquin County, CA","Barr, 1957 (DV/D, lat and long approximated)",37.92,-121.31,9/23/47,1947,Sep
-BULAR-Barr,"Bull Shoals, AR","Barr, 1957 (DV/D, lat and long approximated)",36.37,-92.59,7/1/53,1953,Jul
-FLOAL-Barr,"Flourence, AL","Barr, 1957 (DV/D, lat and long approximated)",34.82,-87.66,10/12/54,1954,Oct
+SLILA,"Hunter's Creek Drive, Slidell, LA",This Study (Ace2),30.327,-89.749,4/30/2024,2024,Apr
+BYRWA,"Byron, WA (Byron Pond)",This Study (Ace2),46.193,-119.899,9/26/2023,2023,Sep
+COSTX,"College Station, TX",This Study (Ace2),30.60044,-96.26893,11/11/2023,2023,Nov
+HUNNJ,"Hunterdon, NJ",This Study (Ace2),40.539588,-74.834616,9/12/2023,2023,Sep
+LINCA2,"Lincoln, CA (Lincoln Ranch)",This Study (Ace2),38.904465,-121.306331,9/18/2023,2023,Sep
+ROCMD,"Rockville, MD",This Study (Ace2),39.057753,-77.130547,6/6/2023,2023,Jun
+SLCUT,"Salt Lake City, UT (mix of sites)",This Study (Ace2),40.74804853,-111.9678782,9/19/2023,2023,Sep
+SOMNJ,"Somerset, NJ",This Study (Ace2),40.533576,-74.586099,9/20/2023,2023,Sep
+SUTCA,"Sutter-Yuba, CA",This Study (Ace2),39.166466,-121.598446,10/11/2023,2023,Sep
+GLEUT-Cope,"Glendale, Salt Lake County UT","Cope, 2023 (Ace2)",40.747503,-111.967566,8/5/2021,2021,Aug
+BENUT-Cope,"Benson Mill, Tooele County, UT","Cope, 2023 (Ace2)",40.649387,-112.296753,8/12/2021,2021,Aug
+GRENC-Richards,"Greenville, Pitt County, NC","Richards et al, 2018 (species ID not listed, lat and long approximated)",35.589873,-77.371302,not provided,2016,Jun-Oct
+WINNC-Richards,"Winterville, Pitt County, NC","Richards et al, 2018 (species ID not listed, lat and long approximated)",35.518729,-77.418449,not provided,2016,Jun-Oct
+TRUIL-Kothera,"Trumbull Park, IL","Kothera et al, 2020 (microsatellites)",41.7049,-87.5644,8/1/2012,2012,Aug
+FAIVA-Huang,"Fairfax, VA","Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, long approximated, no date provided)",38.854,-77.195,not provided,2007,Jun-Oct
+RALNC-Huang,"Raleigh, NC","Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, long approximated, no date provided)",35.743,-78.626,not provided,2007,Jun-Oct
+ATLGA-Huang,"Atlanta, GA","Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, long approximated, no date provided)",33.807,-84.36,not provided,2007,Jun-Oct
+FORNY-Huang,"Fort Totten, NY","Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, long approximated, date provided from previous paper)",40.796,-73.778,06/01/2007-10/30/2007,2007,Jun-Oct
+TRENJ-Huang,"Trenton, NJ","Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, long approximated, date provided from previous paper)",40.233,-74.766,06/01/2007-10/30/2007,2007,Jun-Oct
+BROMS-Kothera,"Brookhaven, Lincoln County, MS","Kothera et al, 2009 (Ace2/microsatellites)",31.586,-90.452,8/1/2005-08/30/2005,2005,Aug
+JACMS-Kothera,"Jackson, Heines County, MS","Kothera et al, 2009 (Ace2/microsatellites)",32.311,-90.174,8/1/2005-08/30/2005,2005,Aug
+VAIMS-Kother,"Vaiden, Carrol County, MS","Kothera et al, 2009 (Ace2/microsatellites)",33.333,-89.753,8/1/2005-08/30/2005,2005,Aug
+BATMS-Kothera,"Batesville, Panola County, MS","Kothera et al, 2009 (Ace2/microsatellites)",34.324,-89.945,8/1/2005-08/30/2005,2005,Aug
+MEMTN-Kothera,"Memphis, Shelby County, TN (mixed sites)","Kothera et al, 2009 (Ace2/microsatellites)",35.077,-90.06,8/1/2005-08/30/2005,2005,Aug
+BLYAR-Kothera,"Blytheville, Mississippi County, AR","Kothera et al, 2009 (Ace2/microsatellites)",35.94,-89.911,8/1/2005-08/30/2005,2005,Aug
+SIKMO-Kothera,"Sikeston, Scott County, MO","Kothera et al, 2009 (Ace2/microsatellites)",36.882,-89.587,8/1/2005-08/30/2005,2005,Aug
+BENIL-Kothera,"Benton, Franklin County, IL","Kothera et al, 2009 (Ace2/microsatellites)",38,-88.924,8/1/2005-08/30/2005,2005,Aug
+EFFIL-Kothera,"Effingham, Effingham County, IL","Kothera et al, 2009 (Ace2/microsatellites)",39.118,-88.557,8/1/2005-08/30/2005,2005,Aug
+CHAIL-Kothera,"Champaign, Champaign County, IL","Kothera et al, 2009 (Ace2/microsatellites)",40.117,-88.265,8/1/2005-08/30/2005,2005,Aug
+FRECA-Cornel,"Fresno, CA (unkempt pool)","Cornel et al, 2003 (DV/D ratio)",36.833333,-120,5/1/2000,2000,May
+CENCA-Cornel,"Centerville, CA (Kings River seepage)","Cornel et al, 2003 (DV/D ratio)",36.833333,-119.833333,6/1/2000,2000,Jun
+REECA-Cornel,"Reedley, CA (Horse ranch trough)","Cornel et al, 2003 (DV/D ratio)",36.666667,-119.833333,8/1/2000,2000,Aug
+CHICA-Urbanelli,"Chico, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",39.7,-121.79,9/29/1992,1992,Sep
+OAKCA-Urbanelli,"Oakley, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",38,-121.738,9/14/1992,1992,Sep
+ALACA-Urbanelli,"Alameda, CA","Urbanelli et al, 1997 (DV/D and allozymes, lat and long approximated because of lat error)",37.7,-122.3,9/4/1992,1992,Sep
+NEWCA-Urbanelli,"Newman, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",37.3,-121.017,8/15/1992,1992,Aug
+MADCA-Urbanelli,"Madera, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.85,-120.078,9/30/1992,1992,Sep
+KERCA-Urbanelli,"Kerman, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.783,-120.066,10/8/1992,1992,Oct
+VISCA-Urbanelli,"Visalia, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",36.333,-119.303,9/17/1992,1992,Sep
+BAKCA-Urbanelli,"Bakersfield, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",35.416,-119.066,9/12/1992,1992,Sep
+CHOCA-Urbanelli,"Chowchilla, CA","Urbanelli et al, 1997 (DV/D and allozymes, long approximated)",37.167,-120.25,10/15/1991,1991,Oct
+FLOAL-Barr,"Flourence, AL","Barr, 1957 (DV/D, lat and long approximated)",34.82,-87.66,10/12/1954,1954,Oct
+BULAR-Barr,"Bull Shoals, AR","Barr, 1957 (DV/D, lat and long approximated)",36.37,-92.59,7/1/1953,1953,Jul
+STLMO-Barr,"St Louis, MO","Barr, 1957 (DV/D, lat and long approximated)",38.61,-90.26,8/26/1952,1952,Aug
+SACCA-Barr,"Sacramento County, CA","Barr, 1957 (DV/D, lat and long approximated)",38.62,-121.45,9/23/1947,1947,Sep
+SANJCA-Barr,"San Juaquin County, CA","Barr, 1957 (DV/D, lat and long approximated)",37.92,-121.31,9/23/1947,1947,Sep
+STLIL-Barr,"St Louis East, IL","Barr, 1957 (DV/D, lat and long approximated)",38.64,-90.17,06/01/1944-08/30/1944,1944,Jun-Sep
+LATCA-McAbee,"Laton, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.427,-119.689,06/15/2005-10/15/2005,2005,Jun-Oct
+ORACA-McAbee,"Orange Cove, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.628,-119.306,06/15/2005-10/15/2005,2005,Jun-Oct
+GORCA-McAbee,"Gordon, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.895,-119.771,06/15/2005-10/15/2005,2005,Jun-Oct
+SANJCA-McAbee,"San Juaquin, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.609,-120.189,06/15/2005-10/15/2005,2005,Jun-Oct
