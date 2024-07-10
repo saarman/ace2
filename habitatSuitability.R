@@ -47,7 +47,7 @@ names(sites_suitability) <- c("locality","site","pp","pq","qq","latitude","longi
 sites_suitability$alleles <- (sites$pp*2)+(sites$pq*2)+(sites$qq*2)
 sites_suitability$h_index <- ((2*sites_suitability$pp)+(sites_suitability$pq))/sites_suitability$alleles
 
-sites_suitability[c("pp","pq","qq","alleles","h_index")]
+#sites_suitability[c("pp","pq","qq","alleles","h_index")]
 
 # name rows
 rownames(sites_suitability)<- sites_suitability$site
@@ -70,7 +70,7 @@ p1 <- ggplot(data=data, aes(x=site, y=h_index)) +
   geom_point(size=3) +
   scale_y_continuous(limits=c(0,1)) +
   scale_x_discrete(limits=rev) +
-  ylab("H-Index\nCxq ----------------> Cxp") +
+  ylab("H-Index\nquinq -------------> pip") +
   xlab("Collection Site") +
   coord_flip()
 
@@ -100,34 +100,6 @@ p3 <- ggplot(data=data, aes(x=site, y=quinq_suitability)) +
 library(patchwork)
 #pdf(file="lineplots.pdf", width = 8, height = 6)
 p1 + p2 + p3
-#dev.off()
-
-#############################################
-# Scatter plot of hybrid index versus suitability
-#############################################
-
-p4 <- ggplot(data=data, aes(y=pip_suitability,x=h_index)) + 
-  geom_point() +
-  #geom_text(aes(label = data$site), hjust = -.25) +
-  geom_point(size=3) +
-  scale_x_continuous(limits=c(0,1)) +
-  scale_y_continuous(limits=c(0,1)) +
-  ylab("HSM-pip") +
-  xlab("H-Index\nCxq -------------------------------------------> Cxp")
-  #coord_flip()
-
-p5 <- ggplot(data=data, aes(y=quinq_suitability,x=h_index)) + 
-  geom_point() +
-  #geom_text(aes(label = data$site), hjust = -.25) +
-  geom_point(size=3) +
-  scale_x_continuous(limits=c(0,1)) +
-  scale_y_continuous(limits=c(0,1)) +
-  ylab("HSM-quinq") +
-  xlab("H-Index\nCxq -------------------------------------------> Cxp")
-  #coord_flip()
-
-#pdf(file="scatterplots.pdf", width = 7.5, height = 4)
-p4 + p5
 #dev.off()
 
 ############################################
@@ -176,6 +148,28 @@ summary(quinq.lm)
 #Multiple R-squared:  0.1156,	Adjusted R-squared:  0.05668 
 #F-statistic: 1.961 on 1 and 15 DF,  p-value: 0.1817
 
+lat.lm <- lm(h_index~latitude, data = sites_suitability)
+summary(lat.lm)
+
+# Call:
+#   lm(formula = h_index ~ latitude, data = sites_suitability)
+# 
+# Residuals:
+#   Min       1Q   Median       3Q      Max 
+# -0.52553 -0.18492  0.05696  0.14979  0.32816 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -2.08841    0.42480  -4.916 0.000186 ***
+#   latitude     0.07031    0.01132   6.209 1.67e-05 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.2523 on 15 degrees of freedom
+# Multiple R-squared:  0.7199,	Adjusted R-squared:  0.7012 
+# F-statistic: 38.55 on 1 and 15 DF,  p-value: 1.673e-05
+
+# multivariate
 pip.quinq.lm <- lm(h_index~pip_suitability*quinq_suitability, data = sites_suitability)
 summary(pip.quinq.lm)
 
@@ -198,6 +192,45 @@ summary(pip.quinq.lm)
 # Residual standard error: 0.2065 on 13 degrees of freedom
 # Multiple R-squared:  0.8374,	Adjusted R-squared:  0.7999 
 # F-statistic: 22.32 on 3 and 13 DF,  p-value: 2.099e-05
+
+#############################################
+# Scatter plot of hybrid index versus suitability
+#############################################
+
+p4 <- ggplot(data=data, aes(x=h_index, y=pip_suitability)) + 
+  geom_point(size=3) +
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("HSM-pip") +
+  xlab("H-Index\nquinq -------------> pip")
+  #coord_flip()
+
+p5 <- ggplot(data=data, aes(x=h_index,y=quinq_suitability)) + 
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("HSM-quinq") +
+  xlab("H-Index\nquinq -------------> pip")
+  #coord_flip()
+
+p6 <- ggplot(data=data, aes(x=h_index,y=latitude)) + 
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  #scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("Latitude") +
+  xlab("H-Index\nquinq -------------> pip")
+  #coord_flip()
+
+
+#pdf(file="scatterplots.pdf", width = 7.5, height = 3)
+p6 + p4 + p5
+#dev.off()
 
 #############################################
 # Plot maps with complementary colors:
@@ -249,12 +282,12 @@ points(sitesSp, pch = 1)
 #############################################
 library(scales)  #to use alpha() function
 
-dev.off()
+#dev.off()
 pdf(file="pip_quinq_overlap.pdf", width = 8, height = 9)
 plot(pip.trunk, main="Cx. pipiens vs Cx. quinquefasciatus ", col=alpha(colfuncX(10),1),frame.plot=F,axes=F,box=F,add=F,legend=F)
 plot(quinq.trunk,main="Cx. quinquefasciatus", col=alpha(colfuncY(10),0.75),frame.plot=F,axes=F,box=F,add=T,legend=F)
 points(sitesSp, pch = 1)
-dev.off()
+#dev.off()
 
 
 
