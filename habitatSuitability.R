@@ -59,7 +59,7 @@ barplot(sites_suitability$pip_suitability,names.arg = rownames(sites_suitability
 barplot(sites_suitability$quinq_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab="HSM-quinq")
 #dev.off()
 
-#with ggplot, but i'm not sure I like how it looks
+#with ggplot
 data <- as.data.frame(sites_suitability)
 data$site <- rownames(sites_suitability)
 
@@ -70,7 +70,7 @@ p1 <- ggplot(data=data, aes(x=site, y=h_index)) +
   geom_point(size=3) +
   scale_y_continuous(limits=c(0,1)) +
   scale_x_discrete(limits=rev) +
-  ylab("H-Index\nquinq -------------> pip") +
+  ylab("H-Index\nquinq -----------> pip") +
   xlab("Collection Site") +
   coord_flip()
 
@@ -282,25 +282,32 @@ points(sitesSp, pch = 1)
 #############################################
 library(scales)  #to use alpha() function
 
-#dev.off()
-pdf(file="pip_quinq_overlap.pdf", width = 8, height = 9)
-plot(pip.trunk, main="Cx. pipiens vs Cx. quinquefasciatus ", col=alpha(colfuncX(10),1),frame.plot=F,axes=F,box=F,add=F,legend=F)
-plot(quinq.trunk,main="Cx. quinquefasciatus", col=alpha(colfuncY(10),0.75),frame.plot=F,axes=F,box=F,add=T,legend=F)
-points(sitesSp, pch = 1)
-#dev.off()
+dev.off()
+#pdf(file="pip_quinq_overlap_pies.pdf", width = 8, height = 9)
+plot(pip, main="Cx. pipiens vs Cx. quinquefasciatus ", col=alpha(colfuncX(10),1),frame.plot=F,axes=F,box=F,add=F,legend=F)
+plot(quinq,main="Cx. quinquefasciatus", col=alpha(colfuncY(10),0.75),frame.plot=F,axes=F,box=F,add=T,legend=F)
 
+#add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+map("state", col = "grey", fill = FALSE, add=T)
+# add from data table
+for (i in 1:length(sites_suitability$site)){
+  add.pie(z = c(sites_suitability[i,3],sites_suitability[i,4],sites_suitability[i,5]), x = sites_suitability$longitude[i], y = sites_suitability$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+}
+dev.off()
 
+#pdf(file="pip_quinq_overlap.pdf", width = 8, height = 9)
+plot(pip, main="Cx. pipiens vs Cx. quinquefasciatus ", col=alpha(colfuncX(10),1),frame.plot=F,axes=F,box=F,add=F,legend=F)
+plot(quinq,main="Cx. quinquefasciatus", col=alpha(colfuncY(10),0.75),frame.plot=F,axes=F,box=F,add=T,legend=F)
+dev.off()
 
-
-
-
-
-
-
-
-
-
-
+#pdf(file="USA_ace2_pies.pdf", width = 8, height = 9)
+#add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
+map("state", col = "grey", fill = T, add=F)
+# add from data table
+for (i in 1:length(sites_suitability$site)){
+  add.pie(z = c(sites_suitability[i,3],sites_suitability[i,4],sites_suitability[i,5]), x = sites_suitability$longitude[i], y = sites_suitability$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+}
+dev.off()
 
 
 
