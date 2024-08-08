@@ -46,10 +46,10 @@ STLMO-Barr,"St Louis, MO","Barr, 1957 (DV/D, lat and long approximated)",38.61,-
 SACCA-Barr,"Sacramento County, CA","Barr, 1957 (DV/D, lat and long approximated)",38.62,-121.45,9/23/47,1947,Sep
 SANCA-Barr,"San Juaquin County, CA","Barr, 1957 (DV/D, lat and long approximated)",37.92,-121.31,9/23/47,1947,Sep
 STLIL-Barr,"St Louis East, IL","Barr, 1957 (DV/D, lat and long approximated)",38.64,-90.17,06/01/1944-08/30/1944,1944,Jun-Sep
-LATCA-McAbee,"Laton, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.427,-119.689,06/15/2005-10/15/2005,2005,Jun-Oct
-ORACA-McAbee,"Orange Cove, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.628,-119.306,06/15/2005-10/15/2005,2005,Jun-Oct
-GORCA-McAbee,"Gordon, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.895,-119.771,06/15/2005-10/15/2005,2005,Jun-Oct
-SANCA-McAbee,"San Juaquin, Fresno County, CA","McAbee et al, 2007 (Ace2, lat and long approximated from Fig 2)",36.609,-120.189,06/15/2005-10/15/2005,2005,Jun-Oct
+LATCA-McAbee,"Laton, Fresno County, CA","McAbee et al, 2008 (Ace2, lat and long approximated from Fig 2)",36.427,-119.689,06/15/2005-10/15/2005,2005,Jun-Oct
+ORACA-McAbee,"Orange Cove, Fresno County, CA","McAbee et al, 2008 (Ace2, lat and long approximated from Fig 2)",36.628,-119.306,06/15/2005-10/15/2005,2005,Jun-Oct
+GORCA-McAbee,"Gordon, Fresno County, CA","McAbee et al, 2008 (Ace2, lat and long approximated from Fig 2)",36.895,-119.771,06/15/2005-10/15/2005,2005,Jun-Oct
+SANCA-McAbee,"San Juaquin, Fresno County, CA","McAbee et al, 2008 (Ace2, lat and long approximated from Fig 2)",36.609,-120.189,06/15/2005-10/15/2005,2005,Jun-Oct
 CLAMD-Arsenault,"Clarksville, Howard County, MD ","Arsenault-Benoit et al, 2023 (Ace2)",39.25637,-76.9276,04/01/2020-05/31/2020,2020,Apr-May
 OLDMD-Arsenault,"Old Barn, Silver Spring, MD","Arsenault-Benoit et al, 2023 (Ace2)",39.0992,-77.0018,04/01/2020-05/31/2020,2020,Apr-May
 ANADC-Arsenault,"Anacostia, District of Columbia, DC","Arsenault-Benoit et al, 2023 (Ace2)",38.84722,-77.0118,06/01/2020-07/31/2020,2020,Jun-Jul
