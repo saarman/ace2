@@ -19,22 +19,30 @@ https://ondemand.chpc.utah.edu/pun/sys/dashboard/batch_connect/sys/rstudio_serve
 
 #  Slurm
 **Slurm** to connect and allocate a job on the correct node. For example to initiate an “interactive” node, run commands such as:
-      
-    salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
+
+```
+salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
+```
 
 # Secure Shell (ssh) from Terminal (in bash):
 **ssh** directions: https://www.chpc.utah.edu/documentation/software/ssh.php
 ssh <uNID>@kingspeak.chpc.utah.edu #syntax  
+```
 ssh u6036559@notchpeak.chpc.utah.edu #example   
-      
-    salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
+```
 
+Allocate a slurm interactive node
+```
+salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
+```
    
 # Modules can be used with FastX3 or Secure Shell
 Modules are used to access installed software:  https://www.chpc.utah.edu/documentation/software/modules.php   
-    module spider plink
-    module load plink/2.0
-      
+
+```
+module spider plink
+module load plink/2.0
+```      
 
 # Connect github with Rstudio 
 1) create a personal access token  
@@ -50,9 +58,12 @@ You will be asked for your username and token if you are not already signed into
 
 5) Then use the Git menu in your RStudio Server top right window to change to the remote repository, commit, pull, push, etc.
 
-# ASCII raster file for interpolation
+# Remember to update Permissions
+For example:
+```
 chmod -R g+w /uufs/chpc.utah.edu/common/home/saarman-group1/raster_files  
-/uufs/chpc.utah.edu/common/home/saarman-group1/raster_files/RH.asc
+```
+
 
 
 
