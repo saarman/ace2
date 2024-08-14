@@ -18,7 +18,7 @@ https://ondemand.chpc.utah.edu/pun/sys/dashboard/batch_connect/sys/rstudio_serve
 **You can access a running session by going to https://ondemand.chpc.utah.edu/pun/sys/dashboard/batch_connect/sessions 
 
 #  Slurm
-**Slurm** to connect and allocate a job on the correct node. For example to initiate an “interactive” node, run commands such as:
+**Slurm** to connect and allocate a job on the correct node. For example to initiate an “interactive” job, run commands such as:
 
 ```
 salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
@@ -31,7 +31,7 @@ ssh <uNID>@kingspeak.chpc.utah.edu #syntax
 ssh u6036559@notchpeak.chpc.utah.edu #example   
 ```
 
-Allocate a slurm interactive node
+Allocate a slurm interactive job
 ```
 salloc --time=1:00:00 --ntasks 1 --mem=100G --account=saarman-np --partition=saarman-shared-np
 ```
