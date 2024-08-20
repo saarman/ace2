@@ -131,15 +131,35 @@ dev.off()
 
 s_index.lm <- lm(h_index~s_index, data = sitesDf)
 summary(s_index.lm)
-  
+
+# Call:
+#   lm(formula = h_index ~ s_index, data = sitesDf)
+# 
+# Residuals:
+#   Min       1Q   Median       3Q      Max 
+# -0.62197 -0.10887  0.00215  0.12581  0.35882 
+# 
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  -0.2078     0.1236  -1.682    0.113    
+# s_index       1.6911     0.2530   6.685 7.29e-06 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 0.239 on 15 degrees of freedom
+# Multiple R-squared:  0.7487,	Adjusted R-squared:  0.7319 
+# F-statistic: 44.69 on 1 and 15 DF,  p-value: 7.29e-06
+
+lat.lm <- lm(h_index~latitude, data = sitesDf)
+summary(lat.lm)
+
+
 pip.lm <- lm(h_index~pip_hs, data = sitesDf)
 summary(pip.lm)
 
 quinq.lm <- lm(h_index~quinq_hs, data = sitesDf)
 summary(quinq.lm)
 
-lat.lm <- lm(h_index~latitude, data = sitesDf)
-summary(lat.lm)
 
 pip.quinq.lm <- lm(h_index~pip_hs*quinq_hs, data = sitesDf)
 summary(pip.quinq.lm)
