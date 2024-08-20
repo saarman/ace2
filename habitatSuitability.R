@@ -37,8 +37,8 @@ points(sitesSp, pch = 1)
 #############################################
 # Extract suitability at each location
 #############################################
-pip_points <- extract(pip, sitesSp)
-quinq_points <- extract(quinq, sitesSp)
+pip_hs <- extract(pip, sitesSp)
+quinq_hs <- extract(quinq, sitesSp)
 
 sites_suitability <- cbind(sites[,1:7], pip_points,quinq_points)
 names(sites_suitability) <- c("locality","site","pp","pq","qq","latitude","longitude","pip_suitability","quinq_suitability")

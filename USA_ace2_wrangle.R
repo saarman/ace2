@@ -119,7 +119,7 @@ ordered_coord$longitude <- as.data.frame(aggregate(longitude ~ locality, coord, 
 
 
 #create and save plot as png
-png(file="map-pies.png", width=1200, height=700)
+#png(file="map-pies.png", width=1200, height=700)
 
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey90", fill = TRUE)
