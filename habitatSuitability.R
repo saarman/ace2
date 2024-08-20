@@ -34,34 +34,45 @@ points(sitesSp, pch = 1)
 plot(quinq)
 points(sitesSp, pch = 1)
 
+
 #############################################
-# Extract suitability at each location
+# Extract suitability at each location, create data frame
 #############################################
-pip_hs <- extract(pip, sitesSp)
-quinq_hs <- extract(quinq, sitesSp)
 
-sites_suitability <- cbind(sites[,1:7], pip_points,quinq_points)
-names(sites_suitability) <- c("locality","site","pp","pq","qq","latitude","longitude","pip_suitability","quinq_suitability")
+# start data frame and name fields
+sitesDf <- as.data.frame(sites[,1:7])
+names(sitesDf) <- c("locality","site","pp","pq","qq","latitude","longitude")
 
-# calculate h-index
-sites_suitability$alleles <- (sites$pp*2)+(sites$pq*2)+(sites$qq*2)
-sites_suitability$h_index <- ((2*sites_suitability$pp)+(sites_suitability$pq))/sites_suitability$alleles
+# extract habitat suitability value for pip and quinq layers at each point
+sitesDf$pip_hs <- extract(pip, sitesSp)[,1]
+sitesDf$quinq_hs <- extract(quinq, sitesSp)[,1]
 
-#sites_suitability[c("pp","pq","qq","alleles","h_index")]
+# calculate + add: hybrid index,suitability index
+sitesDf$alleles <- (sites$pp*2)+(sites$pq*2)+(sites$qq*2)
+sitesDf$h_index <- ((2*sitesDf$pp)+(sitesDf$pq))/sitesDf$alleles # p/p+q
+sitesDf$s_index <- sitesDf$pip_hs/(sitesDf$pip_hs+sitesDf$quinq_hs) # pip suitability / total suitability
+#plot(sitesDf$h_index,sitesDf$s_index, xlim = c(0,1), ylim = c(0,1))
+#abline(0,1)
 
 # name rows
-rownames(sites_suitability)<- sites_suitability$site
+rownames(sitesDf)<- sitesDf$site
+
+
+#############################################
+# Barplots of basic data and results
+#############################################
 
 #pdf(file="barplots.pdf", width = 8, height = 9)
-par(mfrow = c(1, 3), mar=c(10,10,2,2))
-barplot(sites_suitability$h_index,names.arg = rownames(sites_suitability),horiz = T,las=2,xlab="H-Index")
-barplot(sites_suitability$pip_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab = "HSM-pip")
-barplot(sites_suitability$quinq_suitability,names.arg = rownames(sites_suitability),horiz = T,las = 2, xlab="HSM-quinq")
+par(mfrow = c(1, 4), mar=c(10,10,2,2))
+barplot(sitesDf$h_index,names.arg = rownames(sitesDf),horiz = T,las=2,xlab="H-index")
+barplot(sitesDf$s_index,names.arg = rownames(sitesDf),horiz = T,las = 2, xlab="S-index")
+barplot(sitesDf$pip_hs,names.arg = rownames(sitesDf),horiz = T,las = 2, xlab = "HSM-pip")
+barplot(sitesDf$quinq_hs,names.arg = rownames(sitesDf),horiz = T,las = 2, xlab="HSM-quinq")
 #dev.off()
 
 #with ggplot
-data <- as.data.frame(sites_suitability)
-data$site <- rownames(sites_suitability)
+data <- as.data.frame(sitesDf)
+data$site <- rownames(sitesDf)
 
 p1 <- ggplot(data=data, aes(x=site, y=h_index)) + 
   geom_line() +
@@ -70,11 +81,22 @@ p1 <- ggplot(data=data, aes(x=site, y=h_index)) +
   geom_point(size=3) +
   scale_y_continuous(limits=c(0,1)) +
   scale_x_discrete(limits=rev) +
-  ylab("H-Index\nquinq -----------> pip") +
+  ylab("H-index\nquinq --------> pip") +
   xlab("Collection Site") +
   coord_flip()
 
-p2 <- ggplot(data=data, aes(x=site, y=pip_suitability)) + 
+p2 <- ggplot(data=data, aes(x=site, y=s_index)) + 
+  geom_line() +
+  geom_segment(aes(xend=site, yend=0), color="black") + 
+  #geom_text(aes(label = h_index), hjust = -.5) +
+  geom_point(size=3) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_x_discrete(limits=rev) +
+  ylab("S-index\nquinq ---------> pip") +
+  xlab("Collection Site") +
+  coord_flip()
+
+p3.1 <- ggplot(data=data, aes(x=site, y=pip_hs)) + 
   geom_line() +
   geom_segment(aes(xend=site, yend=0), color="black") + 
   #geom_text(aes(label = h_index), hjust = -.5) +
@@ -85,7 +107,7 @@ p2 <- ggplot(data=data, aes(x=site, y=pip_suitability)) +
   xlab(NULL) +
   coord_flip()
 
-p3 <- ggplot(data=data, aes(x=site, y=quinq_suitability)) + 
+p3.2 <- ggplot(data=data, aes(x=site, y=quinq_hs)) + 
   geom_line() +
   geom_segment(aes(xend=site, yend=0), color="black") + 
   #geom_text(aes(label = h_index), hjust = -.5) +
@@ -98,139 +120,75 @@ p3 <- ggplot(data=data, aes(x=site, y=quinq_suitability)) +
 
 
 library(patchwork)
-#pdf(file="lineplots.pdf", width = 8, height = 6)
-p1 + p2 + p3
-#dev.off()
+#pdf(file="lineplots.pdf", width = 5, height = 5)
+p1 + p2
+#p1 + p3.1 + p2 + p3.2
+dev.off()
 
 ############################################
 # Linear model fit
 ############################################
 
-pip.lm <- lm(h_index~pip_suitability, data = sites_suitability)
+s_index.lm <- lm(h_index~s_index, data = sitesDf)
+summary(s_index.lm)
+  
+pip.lm <- lm(h_index~pip_hs, data = sitesDf)
 summary(pip.lm)
 
-# Call:
-#   lm(formula = h_index ~ pip_suitability, data = sites_suitability)
-# 
-# Residuals:
-#   Min       1Q   Median       3Q      Max 
-# -0.54326 -0.05763  0.04165  0.06985  0.24012 
-# 
-# Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)      -0.1451     0.1027  -1.414    0.178    
-# pip_suitability   1.0969     0.1450   7.567  1.7e-06 ***
-#   ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.2172 on 15 degrees of freedom
-# Multiple R-squared:  0.7924,	Adjusted R-squared:  0.7786 
-# F-statistic: 57.26 on 1 and 15 DF,  p-value: 1.698e-06
-# 
-quinq.lm <- lm(h_index~quinq_suitability, data = sites_suitability)
+quinq.lm <- lm(h_index~quinq_hs, data = sitesDf)
 summary(quinq.lm)
 
-#Call:
-#  lm(formula = h_index ~ quinq_suitability, data = sites_suitability)
-#
-#Residuals:
-#  Min      1Q  Median      3Q     Max 
-#-0.6123 -0.4142  0.1082  0.3296  0.6589 
-#
-#Coefficients:
-#  Estimate Std. Error t value Pr(>|t|)  
-#(Intercept)         0.9690     0.3374   2.872   0.0116 *
-#  quinq_suitability  -0.6440     0.4598  -1.400   0.1817  
-#---
-#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#
-#Residual standard error: 0.4483 on 15 degrees of freedom
-#Multiple R-squared:  0.1156,	Adjusted R-squared:  0.05668 
-#F-statistic: 1.961 on 1 and 15 DF,  p-value: 0.1817
-
-lat.lm <- lm(h_index~latitude, data = sites_suitability)
+lat.lm <- lm(h_index~latitude, data = sitesDf)
 summary(lat.lm)
 
-# Call:
-#   lm(formula = h_index ~ latitude, data = sites_suitability)
-# 
-# Residuals:
-#   Min       1Q   Median       3Q      Max 
-# -0.52553 -0.18492  0.05696  0.14979  0.32816 
-# 
-# Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept) -2.08841    0.42480  -4.916 0.000186 ***
-#   latitude     0.07031    0.01132   6.209 1.67e-05 ***
-#   ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.2523 on 15 degrees of freedom
-# Multiple R-squared:  0.7199,	Adjusted R-squared:  0.7012 
-# F-statistic: 38.55 on 1 and 15 DF,  p-value: 1.673e-05
-
-# multivariate
-pip.quinq.lm <- lm(h_index~pip_suitability*quinq_suitability, data = sites_suitability)
+pip.quinq.lm <- lm(h_index~pip_hs*quinq_hs, data = sitesDf)
 summary(pip.quinq.lm)
 
-# Call:
-#   lm(formula = h_index ~ pip_suitability * quinq_suitability, data = sites_suitability)
-# 
-# Residuals:
-#   Min       1Q   Median       3Q      Max 
-# -0.48189 -0.02010  0.02957  0.04941  0.27676 
-# 
-# Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)  
-# (Intercept)                       -0.06076    0.43667  -0.139   0.8915  
-# pip_suitability                    1.35361    0.57058   2.372   0.0338 *
-#   quinq_suitability                 -0.11288    0.56034  -0.201   0.8435  
-# pip_suitability:quinq_suitability -0.39619    0.73972  -0.536   0.6013  
-# ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.2065 on 13 degrees of freedom
-# Multiple R-squared:  0.8374,	Adjusted R-squared:  0.7999 
-# F-statistic: 22.32 on 3 and 13 DF,  p-value: 2.099e-05
 
 #############################################
 # Scatter plot of hybrid index versus suitability
 #############################################
 
-p4 <- ggplot(data=data, aes(x=h_index, y=pip_suitability)) + 
-  geom_point(size=3) +
-  #geom_text(aes(label = data$site), hjust = -.25) +
-  scale_x_continuous(limits=c(0,1)) +
-  scale_y_continuous(limits=c(0,1)) +
-  geom_smooth(method = "lm", se = TRUE) +
-  ylab("HSM-pip") +
-  xlab("H-Index\nquinq -------------> pip")
-  #coord_flip()
 
-p5 <- ggplot(data=data, aes(x=h_index,y=quinq_suitability)) + 
-  #geom_text(aes(label = data$site), hjust = -.25) +
-  geom_point(size=3) +
-  scale_x_continuous(limits=c(0,1)) +
-  scale_y_continuous(limits=c(0,1)) +
-  geom_smooth(method = "lm", se = TRUE) +
-  ylab("HSM-quinq") +
-  xlab("H-Index\nquinq -------------> pip")
-  #coord_flip()
-
-p6 <- ggplot(data=data, aes(x=h_index,y=latitude)) + 
+p4 <- ggplot(data=data, aes(x=h_index,y=latitude)) + 
   #geom_text(aes(label = data$site), hjust = -.25) +
   geom_point(size=3) +
   scale_x_continuous(limits=c(0,1)) +
   #scale_y_continuous(limits=c(0,1)) +
   geom_smooth(method = "lm", se = TRUE) +
   ylab("Latitude") +
-  xlab("H-Index\nquinq -------------> pip")
-  #coord_flip()
+  xlab("H-index\nquinq ---------------------> pip")
 
+p5 <- ggplot(data=data, aes(x=h_index,y=s_index)) + 
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("S-index\nquinq ---------------------> pip") +
+  xlab("H-index\nquinq ---------------------> pip")
 
-#pdf(file="scatterplots.pdf", width = 7.5, height = 3)
-p6 + p4 + p5
-#dev.off()
+p6.1 <- ggplot(data=data, aes(x=h_index, y=pip_hs)) + 
+  geom_point(size=3) +
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("HSM-pip") +
+  xlab("H-index\nquinq -------------------> pip")
+
+p6.2 <- ggplot(data=data, aes(x=h_index,y=quinq_hs)) + 
+  #geom_text(aes(label = data$site), hjust = -.25) +
+  geom_point(size=3) +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("HSM-quinq") +
+  xlab("H-index\nquinq -------------------> pip")
+
+#pdf(file="scatterplots.pdf", width = 10, height = 5)
+p4 + p5
+dev.off()
 
 #############################################
 # Plot maps with complementary colors:
@@ -290,8 +248,8 @@ plot(quinq,main="Cx. quinquefasciatus", col=alpha(colfuncY(10),0.75),frame.plot=
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey", fill = FALSE, add=T)
 # add from data table
-for (i in 1:length(sites_suitability$site)){
-  add.pie(z = c(sites_suitability[i,3],sites_suitability[i,4],sites_suitability[i,5]), x = sites_suitability$longitude[i], y = sites_suitability$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+for (i in 1:length(sitesDf$site)){
+  add.pie(z = c(sitesDf[i,3],sitesDf[i,4],sitesDf[i,5]), x = sitesDf$longitude[i], y = sitesDf$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
 }
 dev.off()
 
@@ -304,8 +262,8 @@ dev.off()
 #add in pie charts source("http://membres-timc.imag.fr/Olivier.Francois/Conversion.R")
 map("state", col = "grey", fill = T, add=F)
 # add from data table
-for (i in 1:length(sites_suitability$site)){
-  add.pie(z = c(sites_suitability[i,3],sites_suitability[i,4],sites_suitability[i,5]), x = sites_suitability$longitude[i], y = sites_suitability$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
+for (i in 1:length(sitesDf$site)){
+  add.pie(z = c(sitesDf[i,3],sitesDf[i,4],sitesDf[i,5]), x = sitesDf$longitude[i], y = sitesDf$latitude[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 1, radius = 1 )
 }
 dev.off()
 

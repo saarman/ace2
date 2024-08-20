@@ -46,6 +46,12 @@ bottomright=rgb(255,230,15, maxColorValue=255)
 colfuncX <- colorRampPalette(c(bottomleft,upperleft))
 colfuncY <- colorRampPalette(c(bottomleft,bottomright))
 
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+plot(pip, main="", col=alpha(colfuncX(10),1),frame.plot=F,axes=F,box=F,add=F,legend=F,mar = rep(10,4))
+plot(quinq, col=alpha(colfuncY(10),0.75),frame.plot=F,axes=F,box=F,add=T,legend=F)
+#points(sitesSp, pch = 20)
 
 #############################################
 # Extract suitability at each location, create data frame
@@ -74,7 +80,7 @@ rownames(sitesDf)<- sitesDf$site
 # Plot Pies onto habitat suitability with jitter
 #######################################
 # Start the PDF device driver
-pdf(file="Habitat_ace2_pies.pdf", width=11, height=8.5)
+#pdf(file="Habitat_ace2_pies.pdf", width=11, height=8.5)
 
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
