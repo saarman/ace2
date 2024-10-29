@@ -1,0 +1,112 @@
+---
+title: "Hyridization range: Barr 1957 to Current"
+author: "Norah Saarman"
+date: "2024-10-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Hybrid zone maps
+
+## Barr 1957
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+#library(rgeos)
+library(maps)
+
+# Load the data from your CSV files
+pipiens <- read.csv("./downloads/coords_pip_v3.csv")
+pipiens <- pipiens[pipiens$year<1970,]
+quinquefasciatus <- read.csv("./downloads/coords_qui_v3.csv")
+quinquefasciatus <- quinquefasciatus[quinquefasciatus$year<1970,]
+hybrids <- read.csv("./downloads/coords_hyb_v3.csv")
+hybrids <- hybrids[hybrids$year<1970,]
+
+# Convert the datasets to sf objects (spatial dataframes)
+pipiens_sf <- st_as_sf(pipiens, coords = c("longitude", "latitude"), crs = 4326)
+quinquefasciatus_sf <- st_as_sf(quinquefasciatus, coords = c("longitude", "latitude"), crs = 4326)
+hybrids_sf <- st_as_sf(hybrids, coords = c("longitude", "latitude"), crs = 4326)
+
+# Calculate convex hulls for pipiens and quinquefasciatus
+pipiens_hull <- pipiens_sf %>% st_union() %>% st_convex_hull()
+quinquefasciatus_hull <- quinquefasciatus_sf %>% st_union() %>% st_convex_hull()
+hybrids_hull <- hybrids_sf %>% st_union() %>% st_convex_hull()
+
+# Load USA state outlines from the maps package
+us_states <- map_data("state")
+
+# Plot the data with the basemap and range outlines
+ggplot() +
+  # Add the USA basemap with state boundaries
+  geom_polygon(data = us_states, aes(x = long, y = lat, group = group), 
+               fill = "white", color = "black", alpha = 0.3) +
+  # Plot convex hulls for species ranges
+  #geom_sf(data = pipiens_hull, fill = "blue", alpha = 0.2, color = "blue") +
+  #geom_sf(data = quinquefasciatus_hull, fill = "red", alpha = 0.2, color = "red") +
+  #geom_sf(data = hybrids_hull, fill = "purple", alpha = 0.2, color = "purple") +
+  # Plot individual points for hybrids, pipiens, and quinquefasciatus
+  geom_sf(data = quinquefasciatus_sf, aes(color = "Quinquefasciatus"), size = 2) +
+  geom_sf(data = pipiens_sf, aes(color = "Pipiens"), size = 2) +
+  geom_sf(data = hybrids_sf, aes(color = "Hybrid"), size = 2) +
+  # Customize the legend and labels
+  scale_color_manual(values = c("Pipiens" = "blue", "Quinquefasciatus" = "red", "Hybrid" = "purple")) +
+  labs(title = "Distribution of Culex Mosquitoes in the United States",
+       x = "Longitude", y = "Latitude", color = "Species") +
+  theme_minimal()
+```
+
+## Since 2013
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+#library(rgeos)
+library(maps)
+
+# Load the data from your CSV files
+pipiens <- read.csv("./downloads/coords_pip_v3.csv")
+pipiens <- pipiens[pipiens$year>1970,]
+quinquefasciatus <- read.csv("./downloads/coords_qui_v3.csv")
+quinquefasciatus <- quinquefasciatus[quinquefasciatus$year>1970,]
+hybrids <- read.csv("./downloads/coords_hyb_v3.csv")
+hybrids <- hybrids[hybrids$year>1970,]
+
+# Convert the datasets to sf objects (spatial dataframes)
+pipiens_sf <- st_as_sf(pipiens, coords = c("longitude", "latitude"), crs = 4326)
+quinquefasciatus_sf <- st_as_sf(quinquefasciatus, coords = c("longitude", "latitude"), crs = 4326)
+hybrids_sf <- st_as_sf(hybrids, coords = c("longitude", "latitude"), crs = 4326)
+
+# Calculate convex hulls for pipiens and quinquefasciatus
+pipiens_hull <- pipiens_sf %>% st_union() %>% st_convex_hull()
+quinquefasciatus_hull <- quinquefasciatus_sf %>% st_union() %>% st_convex_hull()
+hybrids_hull <- hybrids_sf %>% st_union() %>% st_convex_hull()
+
+# Load USA state outlines from the maps package
+us_states <- map_data("state")
+
+# Plot the data with the basemap and range outlines
+ggplot() +
+  # Add the USA basemap with state boundaries
+  geom_polygon(data = us_states, aes(x = long, y = lat, group = group), 
+               fill = "white", color = "black", alpha = 0.3) +
+  # Plot convex hulls for species ranges
+  #geom_sf(data = pipiens_hull, fill = "blue", alpha = 0.2, color = "blue") +
+  #geom_sf(data = quinquefasciatus_hull, fill = "red", alpha = 0.2, color = "red") +
+  #geom_sf(data = hybrids_hull, fill = "purple", alpha = 0.2, color = "purple") +
+  # Plot individual points for hybrids, pipiens, and quinquefasciatus
+  geom_sf(data = quinquefasciatus_sf, aes(color = "Quinquefasciatus"), size = 2) +
+  geom_sf(data = pipiens_sf, aes(color = "Pipiens"), size = 2) +
+  geom_sf(data = hybrids_sf, aes(color = "Hybrid"), size = 2) +
+  # Customize the legend and labels
+  scale_color_manual(values = c("Pipiens" = "blue", "Quinquefasciatus" = "red", "Hybrid" = "purple")) +
+  labs(title = "Distribution of Culex Mosquitoes in the United States",
+       x = "Longitude", y = "Latitude", color = "Species") +
+  theme_minimal()
+```
