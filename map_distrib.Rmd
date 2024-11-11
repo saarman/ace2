@@ -19,15 +19,15 @@ library(dplyr)
 library(maps)
 
 # Load the data from your CSV files, filter out NAs, and ensure `year` column is numeric
-pipiens <- read.csv("coords_pip_v4.csv") %>%
+pipiens <- read.csv("coords_pip_v5.csv") %>%
   filter(!is.na(year) & latitude > 20) %>%
   mutate(year = as.numeric(year))
 
-quinquefasciatus <- read.csv("coords_qui_v4.csv") %>%
+quinquefasciatus <- read.csv("coords_qui_v5.csv") %>%
   filter(!is.na(year) & latitude > 20) %>%
   mutate(year = as.numeric(year))
 
-hybrids <- read.csv("coords_hyb_v4.csv") %>%
+hybrids <- read.csv("coords_hyb_v5.csv") %>%
   filter(!is.na(year) & latitude > 20) %>%
   mutate(year = as.numeric(year))
 
@@ -103,7 +103,7 @@ ggplot() +
   stat_density_2d(data = all_data %>% filter(Species == "hybrid"),
                   aes(x = longitude, y = latitude, fill = after_stat(level)),
                   geom = "polygon", alpha = 0.4) +
-  scale_fill_gradient(low = "lavender", high = "purple", name = "Hybrid Density") +
+  scale_fill_gradient(low = "lavender", high = "purple", name = "Hybrid Density", trans = "log") +
   
   # Facet the plot into three panels by time period in a single row
   facet_wrap(~Time_Period, nrow = 1) +
@@ -141,7 +141,7 @@ pipiens_plot <- ggplot() +
   stat_density_2d(data = all_data %>% filter(Species == "pipiens"),
                   aes(x = longitude, y = latitude, fill = after_stat(level)),
                   geom = "polygon", alpha = 0.5) +
-  scale_fill_gradient(low = "lightblue", high = "blue", name = "pip") +
+  scale_fill_gradient(low = "lightblue", high = "blue", name = "pip", trans = "log") +
   labs(x = NULL, y = NULL) +
   coord_fixed(ratio = 1.3) +  # Fixed aspect ratio
   theme_minimal()
@@ -152,7 +152,7 @@ quinquefasciatus_plot <- ggplot() +
   stat_density_2d(data = all_data %>% filter(Species == "quinquefasciatus"),
                   aes(x = longitude, y = latitude, fill = after_stat(level)),
                   geom = "polygon", alpha = 0.5) +
-  scale_fill_gradient(low = "pink", high = "red", name = "quinq") +
+  scale_fill_gradient(low = "pink", high = "red", name = "quinq", trans = "log") +
   labs(x = NULL, y = NULL) +
   coord_fixed(ratio = 1.3) +  # Fixed aspect ratio
   theme_minimal()
@@ -171,5 +171,101 @@ hybrid_plot <- ggplot() +
 # Arrange the plots in a row
 grid.arrange(pipiens_plot, quinquefasciatus_plot, hybrid_plot, nrow = 3)
 
+
+```
+
+## Transparent density plots with thinning
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+library(maps)
+
+# Function to thin data by 25 km distance
+thin_by_distance <- function(data, distance_km = 25) {
+  # Convert to sf object with longitude-latitude coordinates
+  data_sf <- st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
+  
+  # Transform to a projected coordinate system for accurate distance calculations
+  data_proj <- st_transform(data_sf, crs = 32633)  # Use UTM Zone 33N or an appropriate UTM zone for your area
+  
+  # Identify clusters of points within the specified distance
+  clusters <- st_is_within_distance(data_proj, dist = distance_km * 1000)  # Convert km to meters
+  
+  # Keep only one point per cluster
+  unique_indices <- sapply(clusters, function(x) x[1])  # Take the first point in each cluster
+  data_thinned <- data[unique_indices, ]
+  
+  return(data_thinned)
+}
+
+# Apply spatial thinning to pipiens and quinquefasciatus data
+pipiens_thinned <- thin_by_distance(pipiens, distance_km = 25)
+quinquefasciatus_thinned <- thin_by_distance(quinquefasciatus, distance_km = 25)
+
+# Convert state data to sf for more accurate boundary rendering
+us_states_sf <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+
+# Plot with thinned data for density and original data for overlayed points
+ggplot() +
+  # Base map with more accurate state outlines using sf
+  geom_sf(data = us_states_sf, fill = "white", color = "black", alpha = 0.3) +
+  
+  # Density layers with large bandwidth for thinned data of each species
+  stat_density_2d(data = pipiens_thinned, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "blue", h = c(2, 2)) +
+  stat_density_2d(data = quinquefasciatus_thinned, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "red", h = c(2, 2)) +
+  stat_density_2d(data = hybrids, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "purple", h = c(2, 2)) +
+  
+  # Overlay individual points from original data for each species
+  geom_point(data = pipiens, aes(x = longitude, y = latitude), color = "blue", shape = 16, size = 1, alpha = 0.6) +
+  geom_point(data = quinquefasciatus, aes(x = longitude, y = latitude), color = "red", shape = 17, size = 1, alpha = 0.6) +
+  geom_point(data = hybrids, aes(x = longitude, y = latitude), color = "purple", shape = 18, size = 1, alpha = 0.6) +
+  
+  # Titles and coord_sf for accurate geographic alignment
+  labs(title = "Culex Mosquito Occurrences with 25 km Thinning",
+       x = "Longitude", y = "Latitude") +
+  coord_sf() +
+  theme_minimal()
+
+```
+Log density of hybrid data points only
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+library(maps)
+
+# Convert state data to sf for more accurate boundary rendering
+us_states_sf <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+
+# Plot with hybrid density layer and legend for species points
+ggplot() +
+  # Base map with state outlines using sf
+  geom_sf(data = us_states_sf, fill = "white", color = "black", alpha = 0.3) +
+  
+  # Logarithmic density layer for hybrids
+  stat_density_2d(data = hybrids, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 1, h = c(2, 2), color = NA) +
+  scale_fill_gradientn(colors = c("lavender", "purple"), trans = "log", name = "Density (hybrids)") +
+  
+  # Overlay individual points with legend
+  geom_point(data = pipiens, aes(x = longitude, y = latitude, color = "pipiens"), shape = 16, size = 1, alpha = 0.6) +
+  geom_point(data = quinquefasciatus, aes(x = longitude, y = latitude, color = "quinquefasciatus"), shape = 17, size = 1, alpha = 0.6) +
+  geom_point(data = hybrids, aes(x = longitude, y = latitude, color = "hybrids"), shape = 15, size = 1, alpha = 0.6) +
+  
+  # Add color legend for species points
+  scale_color_manual(values = c("pipiens" = "blue", "quinquefasciatus" = "red", "hybrids" = "purple"), 
+                     name = "Species") +
+  
+  # Titles and standard coord_sf
+  labs(title = "Culex Mosquito Occurrences",
+       x = "Longitude", y = "Latitude") +
+  coord_sf() +
+  theme_minimal()
 
 ```
