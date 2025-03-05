@@ -1,0 +1,179 @@
+---
+title: "PCA with climate summary stats"
+author: "Norah Saarman"
+date: "2025-03-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load libraries
+library(ggplot2)
+library(ggfortify)  # For PCA visualization
+library(factoextra) # For enhanced PCA plots
+library(dplyr)      # Data manipulation
+library(readr)
+```
+
+# Load and Merge Data  
+
+Prepare for PCA, selecting only relevant columns
+```{r}
+# Load each data set
+hybrid_data <- read_csv("../data/summary_stats_5y_hyb.csv")
+pipiens_data <- read_csv("../data/summary_stats_5y_pip.csv")
+quinquefasciatus_data <- read_csv("../data/summary_stats_5y_qui.csv")
+
+# Add species labels to each dataset
+hybrid_data <- hybrid_data %>% mutate(species = "Hybrid")
+pipiens_data <- pipiens_data %>% mutate(species = "Culex pipiens")
+quinquefasciatus_data <- quinquefasciatus_data %>% mutate(species = "Culex quinquefasciatus")
+
+# Merge all data into one dataframe
+climate_data <- bind_rows(hybrid_data, pipiens_data, quinquefasciatus_data)
+
+# Check structure
+str(climate_data)
+
+# Add a new column to classify data into three time periods
+climate_data <- climate_data %>%
+  mutate(time_period = case_when(
+    year < 2000 ~ "Before 2000",
+    year >= 2000 & year <= 2010 ~ "2000-2010",
+    year > 2010 ~ "After 2010"
+  ))
+
+# Convert to factor to ensure correct ordering in plots
+climate_data$time_period <- factor(climate_data$time_period, levels = c("Before 2000", "2000-2010", "After 2010"))
+
+# Select only numeric climate variables (remove non-climate columns)
+# Leaving latitude in as a proxy for autumn/spring photoperiod
+climate_vars <- climate_data %>% select(-species, -lon, -year, -ID, -time_period)
+
+# Standardize climate variables (PCA works best with scaled data)
+climate_vars_scaled <- scale(climate_vars)
+```
+
+
+# Perform PCA  
+```{r}
+# Run PCA
+pca_result <- prcomp(climate_vars_scaled, center = TRUE, scale. = TRUE)
+
+# Check variance explained by PCs
+summary(pca_result)
+
+# Scree plot to visualize explained variance
+fviz_eig(pca_result)
+
+# Add PCA results to a new dataframe
+pca_data <- as.data.frame(pca_result$x)
+pca_data$species <- climate_data$species  # Retain species labels
+pca_data$time_period <- climate_data$time_period  # Add time period labels
+```
+ 
+# Visualize PCA results by species  
+```{r}
+# PCA Scatter Plot
+ggplot(pca_data, aes(x = PC1, y = PC2, color = species)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(title = "PCA of Climate Data for *Culex pipiens*, *Culex quinquefasciatus*, and Hybrids",
+       x = paste0("PC1 (", round(summary(pca_result)$importance[2,1] * 100, 1), "% variance)"),
+       y = paste0("PC2 (", round(summary(pca_result)$importance[2,2] * 100, 1), "% variance)")) +
+  theme_minimal() +
+  scale_color_manual(values = c("#F8766D", "#00BA38", "#619CFF"))  # Adjust colors
+
+# PCA Scatter Plot with 95% confidence ellipses
+ggplot(pca_data, aes(x = PC1, y = PC2, color = species, fill = species)) +
+  geom_point(size = 3, alpha = 0.7) +  # Scatter plot points
+  stat_ellipse(type = "t", level = 0.95, alpha = 0.2, geom = "polygon", color = NA) +  # 95% Confidence ellipses
+  labs(title = "PCA of Climate Data for *Culex pipiens*, *Culex quinquefasciatus*, and Hybrids",
+       x = paste0("PC1 (", round(summary(pca_result)$importance[2,1] * 100, 1), "% variance)"),
+       y = paste0("PC2 (", round(summary(pca_result)$importance[2,2] * 100, 1), "% variance)")) +
+  theme_minimal() +
+  scale_color_manual(values = c("#F8766D", "#00BA38", "#619CFF")) +  # Adjust point colors
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF")) +  # Adjust ellipse colors
+  theme(legend.position = "right")
+
+# Variable contributions to PCs
+fviz_pca_var(pca_result, col.var = "contrib")
+
+# Biplot with species grouping
+fviz_pca_biplot(pca_result, label="var", habillage = climate_data$species)
+```
+  
+# Vizualize PCA results by species and Time Period  
+
+Before 2000
+2000-2010
+After 2010
+
+```{r}
+
+# Define colors by species
+species_colors <- c("Culex pipiens" = "#F8766D", 
+           "Culex quinquefasciatus" = "#00BA38", 
+           "Hybrid" = "#619CFF")
+
+# Define different shapes for time periods
+time_shapes <- c("Before 2000" = 16, 
+                 "2000-2010" = 17, 
+                 "After 2010" = 18)  # Different point symbols
+
+ggplot(pca_data, aes(x = PC1, y = PC2, 
+      color = species, shape = time_period)) +
+      geom_point(size = 2, alpha = 0.7) + # Points by species,
+      stat_ellipse(data = pca_data %>% filter(species != "Hybrid"), 
+               aes(fill = species), type = "t", level = 0.95, 
+               geom = "polygon", alpha = 0.2, 
+               color = NA) +  # ellipses by species
+      labs(title = "PCA of Climate Data",
+       x = paste0("PC1 (",round(summary(pca_result)$importance[2,1] * 100, 1), "% variance)"),
+       y = paste0("PC2 (", round(summary(pca_result)$importance[2,2] * 100, 1), "% variance)")) +
+      theme_minimal() +
+      scale_color_manual(values = species_colors) +  # by species
+      scale_fill_manual(values = species_colors) +  # by species
+      scale_shape_manual(values = time_shapes) +  # by time period
+      theme(legend.position = "right")
+```
+  
+## Using fviz_pca_biplot and splitting by species and time period
+```{r}
+# Create a new categorical variable for species + time period
+pca_data <- pca_data %>%
+  mutate(species_time = paste(species, time_period, sep = "_"))
+
+# Ensure the new variable is a factor
+pca_data$species_time <- factor(pca_data$species_time, 
+  levels = c("Culex pipiens_Before 2000", "Culex pipiens_2000-2010", 
+  "Culex pipiens_After 2010", "Culex quinquefasciatus_Before 2000", 
+  "Culex quinquefasciatus_2000-2010", "Culex quinquefasciatus_After 2010",
+  "Hybrid_Before 2000", "Hybrid_2000-2010", "Hybrid_After 2010"))
+
+# Define colors (repeating species colors for each time period)
+species_colors <- c("Culex pipiens_Before 2000" = "#F8766D", 
+  "Culex pipiens_2000-2010" = "#F8766D", 
+  "Culex pipiens_After 2010" = "#F8766D",
+  "Culex quinquefasciatus_Before 2000" = "#00BA38", 
+  "Culex quinquefasciatus_2000-2010" = "#00BA38", 
+  "Culex quinquefasciatus_After 2010" = "#00BA38",
+  "Hybrid_Before 2000" = "#619CFF", 
+  "Hybrid_2000-2010" = "#619CFF", 
+  "Hybrid_After 2010" = "#619CFF"
+)
+
+fviz_pca_biplot(pca_result, 
+                label = "var",  # Show variable labels
+                habillage = pca_data$species_time,  # Trick habillage
+                addEllipses = FALSE,  # No automatic ellipses
+                repel = TRUE,  # Avoid overlapping labels
+                col.var = "grey50"  # Change variable arrows to grey
+) +
+  scale_shape_manual(values = c(16, 17, 15, 16, 17, 15, 16, 17, 15)) +  # Circle, Triangle, Square
+  scale_color_manual(values = species_colors) +  # Ensure consistent species colors
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+
+
