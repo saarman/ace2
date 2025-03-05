@@ -269,3 +269,105 @@ ggplot() +
   theme_minimal()
 
 ```
+
+### Smoothed lines for southern edge of pipiens
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+library(maps)
+
+# Define the bin width (e.g., 2 degrees) and create longitude bins
+bin_width <- 1
+pipiens_binned <- pipiens %>%
+  mutate(longitude_bin = cut(longitude, breaks = seq(min(longitude), max(longitude), by = bin_width))) %>%
+  group_by(longitude_bin) %>%
+  filter(latitude == min(latitude)) %>%  # Keep only the southernmost point in each bin
+  ungroup() %>%
+  arrange(longitude)
+
+# Convert state data to sf for accurate boundary rendering
+us_states_sf <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+
+# Plot data with binned and smoothed southern boundary
+ggplot() +
+  # Base map with state outlines
+  geom_sf(data = us_states_sf, fill = "white", color = "black", alpha = 0.3) +
+  
+  # Density layers for pipiens, quinquefasciatus, and hybrids
+  stat_density_2d(data = pipiens_thinned, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "blue", h = c(2, 2)) +
+  stat_density_2d(data = quinquefasciatus_thinned, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "red", h = c(2, 2)) +
+  stat_density_2d(data = hybrids, aes(x = longitude, y = latitude, fill = after_stat(level)),
+                  geom = "polygon", alpha = 0.3, fill = "purple", h = c(2, 2)) +
+  
+  # Connect-the-dots line for southernmost pipiens points in each bin
+  geom_path(data = pipiens_binned, aes(x = longitude, y = latitude), color = "blue", size = 1, linetype = "dashed") +
+  
+  # Smoothed southern boundary line
+  geom_smooth(data = pipiens_binned, aes(x = longitude, y = latitude), color = "blue", size = 1, se = FALSE, method = "loess") +
+  
+  # Overlay individual points for each species
+  geom_point(data = pipiens, aes(x = longitude, y = latitude), color = "blue", shape = 16, size = 1, alpha = 0.6) +
+  geom_point(data = quinquefasciatus, aes(x = longitude, y = latitude), color = "red", shape = 17, size = 1, alpha = 0.6) +
+  geom_point(data = hybrids, aes(x = longitude, y = latitude), color = "purple", shape = 18, size = 1, alpha = 0.6) +
+  
+  # Titles and coord_sf for geographic alignment
+  labs(title = "Culex Mosquito Occurrences with Smoothed Southern Boundary for Pipiens",
+       x = "Longitude", y = "Latitude") +
+  coord_sf() +
+  theme_minimal()
+```
+
+## Sliding window minimum
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(sf)
+library(dplyr)
+library(maps)
+library(slider)
+
+# Define sliding window size in degrees
+window_size <- 40
+
+# Apply sliding window to find the southernmost point within each window after the first two points
+pipiens_windowed <- pipiens %>%
+  arrange(longitude) %>%
+  mutate(southernmost_latitude = slide_dbl(latitude, min, .before = window_size / 2, .after = window_size / 2)) %>%
+  filter(latitude == southernmost_latitude) %>%
+  distinct(longitude, .keep_all = TRUE)  # Keep only one point per longitude
+
+# Add the initial two points to define the boundary start
+pipiens_windowed <- bind_rows(
+  data.frame(longitude = c(-125, -70), latitude = c(37, 36)),  # Define starting points
+  pipiens_windowed
+)
+
+# Convert state data to sf for accurate boundary rendering
+us_states_sf <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+
+# Plot data with sliding window southern boundary and start/end points
+ggplot() +
+  # Base map with state outlines
+  geom_sf(data = us_states_sf, fill = "white", color = "black", alpha = 0.3) +
+  
+  # Connect-the-dots line for southernmost pipiens points in sliding window
+  geom_path(data = pipiens_windowed, aes(x = longitude, y = latitude), color = "blue", size = 1, linetype = "dashed") +
+  
+  # Smoothed southern boundary line
+  geom_smooth(data = pipiens_windowed, aes(x = longitude, y = latitude), color = "blue", size = 1, se = FALSE, method = "loess") +
+  
+  # Overlay individual points for each species
+  geom_point(data = pipiens, aes(x = longitude, y = latitude), color = "blue", shape = 16, size = 1, alpha = 0.6) +
+  geom_point(data = quinquefasciatus, aes(x = longitude, y = latitude), color = "red", shape = 17, size = 1, alpha = 0.6) +
+  geom_point(data = hybrids, aes(x = longitude, y = latitude), color = "purple", shape = 18, size = 1, alpha = 0.6) +
+  
+  # Titles and coord_sf for geographic alignment
+  labs(title = "Culex Mosquito Occurrences with Smoothed Southern Boundary for Pipiens",
+       x = "Longitude", y = "Latitude") +
+  coord_sf() +
+  theme_minimal()
+```
