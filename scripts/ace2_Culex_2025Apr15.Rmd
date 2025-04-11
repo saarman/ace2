@@ -1,0 +1,168 @@
+---
+title: "Ace2 PCR results, Culex pipiens complex"
+author: "Norah Saarman"
+date: "2024-02-27"
+output: pdf_document
+---
+
+R build: Geospatial 4.4.0 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(maps)
+library(sp)
+library(mapdata)
+source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
+library(fields)
+library(mapplots)
+```
+
+## Import species/hybrid counts per site
+
+```{r}
+counts <- read.csv("../data/ThisStudy.txt", sep = "\t")
+countsSp <- SpatialPoints(coords = cbind(counts$long,counts$lat))
+```
+Genotypes in p/q notation:
+Cx. pipiens = pp
+Cx. quinquefasciatus = qq
+
+
+## Create a dataframe of counts
+```{r}
+# start data frame and name fields
+countsDf <- as.data.frame(counts[,c(2,1,4,5,6,9,10,7,8)])
+names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h-index")
+
+# name rows
+rownames(countsDf)<- countsDf$site
+```
+
+## Pie charts on a map
+Convert counts to proportions (frequency):
+```{r}
+freqsDf <- as.data.frame(countsDf[,c("pp","pq","qq")])
+freqsDf <- as.matrix.data.frame(t(apply(freqsDf, 1, function(row) row / sum(row))))
+```
+
+One pie chart at a time, to check code
+```{r, include=F }
+for (i in 1:length(freqsDf[,1])){
+  pie(freqsDf[i,],main=i,col=c("black","grey","white"),radius=.2,clockwise=TRUE,labels = NA)
+}
+```
+
+Plot points on map to check data:
+```{r}
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+#create and plot coord = long, lat
+coord <- as.data.frame(countsDf[,c("longitude","latitude")])
+
+#plot coordinates onto map
+map("usa")
+map(add = T, col = "grey90", fill = TRUE)
+points(coord,col="black",cex=1)
+```
+
+Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Conversion.R"
+```{r}
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Determine plot order by descending h-index
+plot_order <- rev(order(countsDf$`h-index`))
+
+# plot pies onto map
+map("usa")
+map(add = T, col = "grey90", fill = TRUE)
+for (i in plot_order){
+  add.pie(z = freqsDf[i,], 
+          x = coord[i,1], 
+          y = coord[i,2], 
+          clockwise=TRUE, 
+          labels = "", 
+          col = c("black","grey","white"), 
+          cex = 1, radius = 1 )
+}
+```
+
+```{r, eval=F, include = FALSE}
+# Add random jitter, but i don't really like this.
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Plot base map
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+# Jitter settings
+x_jitter <- 2  # degrees longitude
+y_jitter <- 2  # degrees latitude
+
+set.seed(42)  # for reproducibility
+
+for (i in plot_order) {
+  # Jittered coordinates
+  jittered_x <- coord[i, 1] + runif(1, -x_jitter, x_jitter)
+  jittered_y <- coord[i, 2] + runif(1, -y_jitter, y_jitter)
+  
+  # Plot pie chart at jittered location
+  add.pie(z = freqsDf[i,],
+          x = jittered_x,
+          y = jittered_y,
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.2, radius = 1.2)
+}
+```
+Create a jitter data frame by hand:
+```{r}
+# Create a jitter df
+jitterDf <- data.frame(x_jitter = rep(0,25), y_jitter = rep(0,25))
+rownames(jitterDf) <- rownames(countsDf)
+jitterDf[3,] <- c(0,1)
+jitterDf[5,] <- c(1,-1)
+jitterDf[6,] <- c(-2,0)
+jitterDf[8,] <- c(2,-3)
+jitterDf[9,] <- c(3,-1)
+jitterDf[14,] <- c(3,1.5)
+jitterDf[16,] <- c(2,-1.5)
+jitterDf[19,] <- c(1,1)
+jitterDf[20,] <- c(1,-1)
+```
+Add jitter with a line from true origin:
+```{r}
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Plot base map
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+for (i in plot_order) {
+  # Jittered coordinates
+  jittered_x <- coord[i, 1] + (jitterDf[i, 1])
+  jittered_y <- coord[i, 2] + (jitterDf[i, 2])
+  
+  # Draw line from true location to jittered pie
+  segments(x0 = coord[i, 1],
+           y0 = coord[i, 2],
+           x1 = jittered_x,
+           y1 = jittered_y,
+           col = "black", lty = 1, lwd = 1)
+  
+  # Plot pie chart at jittered location
+  add.pie(z = freqsDf[i,],
+          x = jittered_x,
+          y = jittered_y,
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.2, radius = 1.2)
+}
+```
