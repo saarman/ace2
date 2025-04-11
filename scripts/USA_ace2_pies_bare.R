@@ -21,6 +21,19 @@ library(ggplot2)
 sites <- read.csv("./data/ThisStudy.txt", sep = "\t")
 sitesSp <- SpatialPoints(coords = cbind(sites$long,sites$lat))
 
+
+#############################################
+# Create data frame
+#############################################
+colnames(sites)
+# start data frame and name fields
+sitesDf <- as.data.frame(sites[,c(2,1,4,5,6,9,10,7,8)])
+names(sitesDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h-index")
+
+# name rows
+rownames(sitesDf)<- sitesDf$site
+
+
 #######################################
 # Plot Pies onto Map with jitter
 #######################################
@@ -42,4 +55,3 @@ for (i in 1:17){
   add.pie(z = c(sitesDf$pp[i],sitesDf$pq[i],sitesDf$qq[i]), x = sitesDf$longitude[i]+x_offset[i], y = sitesDf$latitude[i]+y_offset[i], clockwise=TRUE, labels = "", col = c("black","grey","white"), cex = 2, radius = 2 )
 }
 
-dev.off()
