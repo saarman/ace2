@@ -1,0 +1,137 @@
+code	locality	site	pip.count	hyb.count	qui.count	year	h-index	lat	long	ref	notes	orig.locality	order				
+001.ByroWA.2023	"Byron, WA"	ByroWA	37	2	0	2023	0.97	46.193	-119.899	This study	Vectech ID = BYRWA	Byron WA	1				
+002.StAnQC.1944	"St. Anne de Bellevue, QC"	StAnQC	22	1	0	1944	1.00	45.456	-73.631	"Barr, 1957"	"Barr, 1957, DVM ratios "	"St. Anne de Bellevue, Quebec"	2				
+003.OttaON.1957	"Ottawa, ON"	OttaON	28	0	0	1957	1.00	45.4209	-75.6901	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Ottawa, Ontario"	3				
+004.StPaMN.1953	"St. Paul, MN"	StPaMN	27	0	0	1953	1.00	44.9497	-93.0931	"Barr, 1957"	"Barr, 1957, DVM ratios "	"St. Paul, Minnesota"	4				
+005.StPaMN.1953	"St. Paul, MN"	StPaMN	6	0	0	1953	1.00	44.9497	-93.0931	"Barr, 1957"	"Barr, 1957, DVM ratios (J.J. Parks)"	"St. Paul, Minnesota"	5				
+006.GreaIL.1944	"Great Lakes, IL"	GreaIL	49	0	0	1944	1.00	42.3093	-87.8497	"Barr, 1957"	"Barr, 1957, DVM ratios (1944 season)"	"Great Lakes, Illinois"	6				
+007.CookIL.2023	"Cook Co, IL"	CookIL	17	0	0	2023	1.00	42.031763	-87.930871	This study	Vectech ID = COOIL	Cook County IL	7				
+008.CachUT.2023	"Cache Valley (Hyde Park), UT"	CachUT	20	0	0	2023	1.00	41.79696	-111.82005	This study	Vectech ID = USUUT	Cache (Hyde Park) UT	8				
+009.BarnMA.2023	"Barnstable Co, MA"	BarnMA	12	0	0	2023	1.00	41.793615	-69.994266	This study	Vectech ID = BARMA	Barnstable County MA	9				
+010.TrumIL.2012	"Trumbull Park, IL"	TrumIL	840	26	13	2012	0.97	41.7049	-87.5644	"Kothera et al, 2020 "	"Kothera et al, 2020 (microsatellites), collected: 8/1/2012, month: Aug, year: 2012"	"Trumbull Park, IL"	10				
+011.BoxEUT.2024	"Box Elder Co, UT"	BoxEUT	20	0	0	2024	1.00	41.699446	-112.163864	This study	Vectech ID = BOXUT	Box Elder County UT	11				
+012.OgdeUT.2024	"Ogden, UT"	OgdeUT	7	0	0	2024	1.00	41.203587	-112.048028	This study	Vectech ID = OGDUT	Ogden UT	12				
+013.OxfoNJ.1953	"Oxford, NJ"	OxfoNJ	49	0	0	1953	1.00	40.8032	-74.9896	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Oxford, New Jersey"	13				
+014.FortNY.2007	"Fort Totten, NY"	FortNY	84	5	10	2007	0.87	40.7960	-73.7780	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, date provided from previous paper), collected: 06/01/2007-Vectech-10/30/2007, month: Jun-Vectech-Oct, year: 2007"	"Fort Totten, NY"	14				
+015.SaltUT.2023	"Salt Lake City, UT"	SaltUT	2	11	7	2023	0.38	40.74804853	-111.9678782	This study	Vectech ID = SLCUT	Salt Lake City UT	15				
+016.SaltUT.2021	"Salt Lake City, UT"	SaltUT	9	10	4	2021	0.61	40.7475	-111.9676	"Cope, 2023 "	"Cope, 2023 (Ace2), collected: 8/5/2021, month: Aug, year: 2021"	"Salt Lake City, UT"	16				
+017.GoveNY.1953	"Governor's Island, NY"	GoveNY	15	0	0	1953	1.00	40.6915	-74.0124	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Governor's Island, New York"	17				
+018.SaltUT.1957	"Salt Lake Co, UT*"	SaltUT	40	0	1	1957	0.98	40.6632	-111.9103	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Salt Lake Co., Utah*"	18				
+019.FreeNY.1953	"Freeport, NY"	FreeNY	56	0	0	1953	1.00	40.6576	-73.5836	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Freeport, New York"	19				
+020.BensUT.2021	"Benson Mill, UT"	BensUT	0	13	9	2021	0.30	40.6494	-112.2968	"Cope, 2023 "	"Cope, 2023 (Ace2), collected: 8/12/2021, month: Aug, year: 2021"	"Benson Mill, Tooele County, UT"	20				
+021.ReddCA.2003	"Redding Shasta Co, CA"	ReddCA	1	0	0	2003	1.00	40.5804	-122.3771	"McAbee et al, 2008 "	"McAbee et al, 2008 (Ace2, DVM), collected from wild in 2003 and then maintained in lab colony"	"Redding, Shasta County, CA***"	21				
+022.HuntNJ.2023	"Hunterdon, NJ"	HuntNJ	16	2	1	2023	0.89	40.539588	-74.834616	This study	Vectech ID = HUNNJ	Hunterdon NJ	22				
+023.SomeNJ.2023	"Somerset, NJ"	SomeNJ	12	3	0	2023	0.90	40.533576	-74.586099	This study	Vectech ID = SOMNJ	Somerset NJ	23				
+024.FortCO.2023	"Fort Collins, CO"	FortCO	19	0	0	2023	1.00	40.38428	-104.7894	This study	Vectech ID = CSUCO	Fort Collins CO	24				
+025.UteTUT.2024	"Ute Tribal Lands (Yellowstone), UT"	UteTUT	18	0	0	2024	1.00	40.3289	-109.8911	This study	Vectech ID = UTEUT	Ute Tribal Lands (Yellowstone) UT	25				
+026.VernUT.2024	"Vernal (Boothill), UT"	VernUT	28	0	0	2024	1.00	40.2618	-109.3511	This study	Vectech ID = VERUT	Vernal (Boothill) UT	26				
+027.TrenNJ.2007	"Trenton, NJ"	TrenNJ	97	1	2	2007	0.98	40.2330	-74.7660	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, date provided from previous paper), collected: 06/01/2007-Vectech-10/30/2007, month: Jun-Vectech-Oct, year: 2007"	"Trenton, NJ"	27				
+028.ProvUT.2024	"Provo, UT"	ProvUT	12	0	0	2024	1.00	40.2006463	-111.6273074	This study	Vectech ID = PROUT	Provo UT	28				
+029.ChamIL.2005	"Champaign, IL"	ChamIL	60	40	0	2005	0.80	40.1170	-88.2650	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Champaign, Champaign County, IL"	29				
+030.SeneKS.1951	"Seneca, KS"	SeneKS	11	0	0	1951	1.00	39.8342	-96.0642	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 13, 1951)"	"Seneca, Kansas"	30				
+031.ChicCA.1992	"Chico, CA"	ChicCA	25	60	15	1992	0.55	39.7000	-121.7900	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 9/29/1992, month: Sep, year: 1992"	"Chico, CA"	31				
+032.NewaDE.1953	"Newark, DE"	NewaDE	90	0	0	1953	1.00	39.6828	-75.7516	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Newark, Delaware"	32				
+033.RaymIL.1939	"Raymond, IL"	RaymIL	10	0	0	1939	1.00	39.3195	-89.572	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Raymond, Illinois"	33				
+034.ClarMD .2020	"Clarksville Howard Co, MD "	ClarMD 	23	1	0	2020	0.98	39.2564	-76.9276	"Arsenault-Benoit et al, 2023 "	"Arsenault-Vectech-Benoit et al, 2023 (Ace2), collected: 04/01/2020-Vectech-05/31/2020, month: Apr-Vectech-May, year: 2020"	"Clarksville, Howard County, MD "	34				
+035.SuttCA.2023	"Sutter-Yuba, CA"	SuttCA	9	8	1	2023	0.72	39.166466	-121.598446	This study	Vectech ID = SUTCA	Sutter-Yuba CA	35				
+036.EffiIL.2005	"Effingham, IL"	EffiIL	18	26	56	2005	0.31	39.1180	-88.5570	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Effingham, Effingham County, IL"	36				
+037.Old MD.2020	"Old Barn Silver Spring, MD"	Old MD	30	1	1	2020	0.95	39.0992	-77.0018	"Arsenault-Benoit et al, 2023 "	"Arsenault-Vectech-Benoit et al, 2023 (Ace2), collected: 04/01/2020-Vectech-05/31/2020, month: Apr-Vectech-May, year: 2020"	"Old Barn, Silver Spring, MD"	37				
+038.RockMD.2023	"Rockville, MD"	RockMD	17	3	0	2023	0.93	39.057753	-77.130547	This study	Vectech ID = ROCMD	Rockville MD	38				
+039.LawrKS.1955	"Lawrence, KS"	LawrKS	41	2	0	1955	1.00	38.9719	-95.2359	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 24-Vectech-28, 1955)"	"Lawrence, Kansas"	39				
+040.LawrKS.1951	"Lawrence, KS"	LawrKS	15	0	0	1951	1.00	38.9719	-95.2359	"Barr, 1957"	"Barr, 1957, DVM ratios (July 28, 1951)"	"Lawrence, Kansas"	40				
+041.LincCA.2023	"Lincoln, CA"	LincCA	38	2	0	2023	0.98	38.904465	-121.306331	This study	Vectech ID = LINCA	Lincoln CA	41				
+042.DistDC.2019	"District of Columbia, DC"	DistDC	27	2	3	2019	0.88	38.8913	-77.0260	"Arsenault-Benoit et al, 2023 "	"Arsenault-Vectech-Benoit et al, 2023 (Ace2), Natural History Museum, collected: 04/01/2019-Vectech-05/31/2019, month: Apr-Vectech-May, year: 2019"	"District of Columbia, DC"	42				
+043.FairVA.2007	"Fairfax, VA"	FairVA	90	3	6	2007	0.92	38.8540	-77.1950	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, no date provided), collected: not provided, month: Jun-Vectech-Oct, year: 2007"	"Fairfax, VA"	43				
+044.AnacDC.2020	"Anacostia District of Columbia, DC"	AnacDC	61	3	6	2020	0.89	38.8472	-77.0118	"Arsenault-Benoit et al, 2023 "	"Arsenault-Vectech-Benoit et al, 2023 (Ace2), collected: 06/01/2020-Vectech-07/31/2020, month: Jun-Vectech-Jul, year: 2020"	"Anacostia, District of Columbia, DC"	44				
+045.BadeMO.1952	"Baden North St. Louis, MO"	BadeMO	5	1	0	1952	1.00	38.7287	-90.2178	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Baden, North St. Louis, Missouri"	45				
+046.StAnMO.1952	"St. Ann, MO"	StAnMO	1	0	0	1952	1.00	38.7281	-90.3879	"Barr, 1957"	"Barr, 1957, DVM ratios (July 17, 1952)"	"St. Ann, Missouri"	46				
+047.NortMO.1952	"North St. Louis, MO"	NortMO	10	0	0	1952	1.00	38.7049	-90.2174	"Barr, 1957"	"Barr, 1957, DVM ratios (June 14, 1952)"	"North St. Louis, Missouri"	47				
+048.UnivMO.1952	"University City, MO"	UnivMO	2	0	0	1952	1.00	38.6569	-90.3103	"Barr, 1957"	"Barr, 1957, DVM ratios (June 19, 1952)"	"University City, Missouri"	48				
+049.RichMO.1952	"Richmond Heights, MO"	RichMO	22	0	0	1952	1.00	38.6283	-90.3191	"Barr, 1957"	"Barr, 1957, DVM ratios (June 5, 1952)"	"Richmond Heights, Missouri"	49				
+050.StLoMO.1952	"StLouis, MO"	StLoMO	13	3	4	1952	0.78	38.628	-90.191	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 26, 1952)"	"St. Louis, Missouri"	50				
+051.StLoMO.1953	"StLouis, MO**"	StLoMO	5	0	55	1953	0.08	38.628	-90.191	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 1953)"	"St. Louis, Missouri**"	51				
+052.EastIL.1944	"EastStLouis, IL"	EastIL	79	8	0	1944	1.00	38.6269	-90.1597	"Barr, 1957"	"Barr, 1957, DVM ratios (1944 season)"	"East St. Louis, Illinois"	52				
+053.EastIL.1943	"EastStLouis, IL"	EastIL	15	0	0	1943	1.00	38.6269	-90.1597	"Barr, 1957"	"Barr, 1957, DVM ratios (1943)"	"East St. Louis, Illinois"	53				
+054.MoabUT.2024	"Moab, UT"	MoabUT	5	0	0	2024	1.00	38.59597	-109.5737639	This study	Vectech ID = MOAUT	Moab UT	54				
+055.KirkMO.1952	"Kirkwood, MO"	KirkMO	120	1	0	1952	1.00	38.5801	-90.4069	"Barr, 1957"	"Barr, 1957, DVM ratios (multiple collections)"	"Kirkwood, Missouri"	55				
+056.KirkMO.1952	"Kirkwood, MO"	KirkMO	14	0	0	1952	1.00	38.5801	-90.4069	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 28, 1952)"	"Kirkwood, Missouri"	56				
+057.CambMA.1945	"Cambridge, MA"	CambMA	47	0	0	1945	1.00	38.5715	-76.0763	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Cambridge, Maryland"	57				
+058.CahoIL.1943	"Cahokia, IL"	CahoIL	66	1	65	1943	0.51	38.5662	-90.1794	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Cahokia, Illinois"	58				
+059.SacrCA.1947	"Sacramento Co, CA"	SacrCA	30	52	56	1947	0.50	38.4732	-121.2981	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 28 -Vectech- Sept. 22, 1947)"	"Sacramento Co., California"	59				
+060.KingCA.1957	"King's Co, CA"	KingCA	0	0	4	1957	0.00	38.4364	-121.4083	"Barr, 1957"	"Barr, 1957, DVM ratios "	"King's Co., California"	60				
+061.BainMD.1945	"Bainbridge, MD"	BainMD	21	0	0	1945	1.00	38.3918	-75.1735	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Bainbridge, Maryland"	61				
+062.PatuMD.1945	"Patuxent Naval Air Station Cedar Point, MD*"	PatuMD	30	0	1	1945	0.97	38.2868	-76.4436	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Patuxent Naval Air Station, Cedar Point, Maryland*"	62				
+063.CarmIL.1941	"Carmi, IL"	CarmIL	12	0	0	1941	1.00	38.0909	-88.1586	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Carmi, Illinois"	63				
+064.OaklCA.1992	"Oakley, CA"	OaklCA	55	30	15	1992	0.70	38.0000	-121.7380	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 9/14/1992, month: Sep, year: 1992"	"Oakley, CA"	64				
+065.BentIL.2005	"Benton Franklin Co, IL"	BentIL	34	40	26	2005	0.54	38.0000	-88.9240	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Benton, Franklin County, IL"	65				
+066.StocCA.1957	"Stockton, CA"	StocCA	1	2	1	1957	0.67	37.9577	-121.2908	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Stockton, San Joaquin Co., California"	66				
+067.San CA.1957	"San Joaquin Co, CA"	San CA	1	4	31	1957	0.09	37.9373	-121.2774	"Barr, 1957"	"Barr, 1957, DVM ratios "	"San Joaquin Co., California"	67				
+068.IL OIL.1942	"IL Ordnance Plant Crab Orchard Lake, IL*"	IL OIL	7	0	1	1942	0.88	37.7077	-89.1247	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Illinois Ordnance Plant, Crab Orchard Lake, Illinois*"	68				
+069.AlamCA.1992	"Alameda, CA"	AlamCA	38	25	37	1992	0.51	37.7000	-122.3000	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, lat and long approximated because of lat error), collected: 9/4/1992, month: Sep, year: 1992"	"Alameda, CA"	69				
+070.FronKS.1951	"Frontenac, KS"	FronKS	11	0	0	1951	1.00	37.4556	-94.6891	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 15, 1951)"	"Frontenac, Kansas"	70				
+071.NewmCA.1992	"Newman, CA"	NewmCA	49	25	26	1992	0.62	37.3000	-121.0170	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 8/15/1992, month: Aug, year: 1992"	"Newman, CA"	71				
+072.StGeUT.2023	"StGeorge, UT"	StGeUT	0	0	38	2023	0.00	37.179	-113.32	This study	Vectech ID = STGUT	St George UT	72				
+073.ChowCA.1991	"Chowchilla, CA"	ChowCA	0	22	78	1991	0.11	37.1670	-120.2500	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 10/15/1991, month: Oct, year: 1991"	"Chowchilla, CA"	73				
+074.JoplMO.1952	"Joplin, MO"	JoplMO	7	3	0	1952	1.00	37.0842	-94.5133	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 5, 1952)"	"Joplin, Missouri"	74				
+075.BaxtKS.1957	"Baxter Springs, KS"	BaxtKS	5	4	0	1957	1.00	37.0236	-94.7352	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Baxter Springs, Kansas"	75				
+076.SikeMO.2005	"Sikeston Scott Co, MO"	SikeMO	0	82	18	2005	0.41	36.8820	-89.5870	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Sikeston, Scott County, MO"	76				
+077.FireCA.1952	"Firebaugh Fresno Co, CA"	FireCA	1	2	1	1952	0.67	36.8588	-120.456	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 7, 1952)"	"Firebaugh, Fresno Co., California"	77				
+078.MadeCA.1992	"Madera, CA"	MadeCA	23	43	34	1992	0.45	36.8500	-120.0780	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 9/30/1992, month: Sep, year: 1992"	"Madera, CA"	78				
+079.NorfVA.1957	"Norfolk, VA"	NorfVA	116	15	0	1957	1.00	36.8494	-76.29	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Norfolk, Virginia"	79				
+080.KermCA.1992	"Kerman, CA"	KermCA	21	27	52	1992	0.35	36.7830	-120.0660	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 10/8/1992, month: Oct, year: 1992"	"Kerman, CA"	80				
+081.FresCA.1953	"Fresno, CA"	FresCA	0	4	342	1953	0.01	36.7394	-119.7848	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 17 + Oct. 8 + Oct 16, 1953)"	"Fresno, California"	81				
+082.CentCA.2000	"Centerville Fresno Co, CA"	CentCA	42	42	10	2000	0.67	36.7339	-119.4983	"Cornel et al, 2003 "	"Cornel et al, 2003 (DV/D ratio), collected: 5/1/2000, month: May, year: 2000"	"Centerville Fresno County, CA"	82				
+083.ReedCA.2000	"Reedley (Horse ranch trough), CA"	ReedCA	5	23	21	2000	0.34	36.6667	-119.8333	"Cornel et al, 2003 "	"Cornel et al, 2003 (DV/D ratio), collected: 8/1/2000, month: Aug, year: 2000"	"Reedley (Horse ranch trough), CA"	83				
+084.SelmCA.1953	"Selma Fresno Co, CA"	SelmCA	0	0	202	1953	0.00	36.5708	-119.6121	"Barr, 1957"	"Barr, 1957, DVM ratios (Nov. 30, 1953)"	"Selma, Fresno Co., California"	84				
+085.FresCA.2005	"Fresno Co, CA"	FresCA	26	35	98	2005	0.27	36.4270	-119.6890	"McAbee et al, 2008 "	"McAbee et al, 2008 (Ace2, lat and long approximated from Fig 2, average from categories of DVM reported), collected: 06/15/2005-Vectech-10/15/2005, month: Jun-Vectech-Oct, year: 2005"	"Fresno County, CA"	85				
+086.BullAR.1957	"Bull Shoals, AR"	BullAR	1	7	1	1957	0.82	36.384	-92.5816	"Barr, 1957"	"Barr, 1957, DVM ratios (July 1 to Aug. 29)"	"Bull Shoals, Arkansas"	86				
+087.VisaCA.1992	"Visalia, CA"	VisaCA	22	33	45	1992	0.39	36.3330	-119.3030	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 9/17/1992, month: Sep, year: 1992"	"Visalia, CA"	87				
+088.BlytAR.2005	"Blytheville MS Co, AR"	BlytAR	0	64	36	2005	0.32	35.9400	-89.9110	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Blytheville, Mississippi County, AR"	88				
+089.RaleNC.2007	"Raleigh, NC"	RaleNC	47	18	35	2007	0.56	35.7430	-78.6260	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, no date provided), collected: not provided, month: Jun-Vectech-Oct, year: 2007"	"Raleigh, NC"	89				
+092.BakeCA.1992	"Bakersfield, CA"	BakeCA	7	37	56	1992	0.26	35.4160	-119.0660	"Urbanelli et al, 1997 "	"Urbanelli et al, 1997 (DV/D and allozymes, only if both show hybrids, Fig 2, long approximated), collected: 9/12/1992, month: Sep, year: 1992"	"Bakersfield, CA"	92				
+093.BakeCA.1953	"Bakersfield, CA"	BakeCA	0	0	38	1953	0.00	35.3739	-119.0195	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 16, 1953)"	"Bakersfield, California"	93				
+094.ShelTN.2002	"Shelby Co, TN"	ShelTN	78	25	58	2002	0.56	35.3152	-90.0062	Savage et al. 2006 	"Savage et al. 2006 (Ace2), Shelby County rural middle-Vectech-income M-Vectech-SCVC site no. 404, collected: 8/12/2002, month: Jul, year: 2002"	"Shelby County, TN"	94				
+095.RussAR.1957	"Russellville, AR"	RussAR	0	7	9	1957	0.28	35.2784	-93.1338	"Barr, 1957"	"Barr, 1957, DVM ratios (July 14-Vectech-16)"	"Russellville, Arkansas"	95				
+096.MempTN.2002	"Memphis Westside, TN"	MempTN	58	78	119	2002	0.38	35.2122	-90.0384	Savage et al. 2006 	"Savage et al. 2006 (Ace2), Memphis westside urban middle-Vectech-income M-Vectech-SCVC site no. 8, collected: 8/12/2002, month: Jul, year: 2002"	"Memphis Westside, TN"	96				
+097.MempTN.2002	"Memphis, TN"	MempTN	268	489	652	2002	0.36	35.1131	-90.0572	Savage et al. 2006 	"Savage et al. 2006 (Ace2), Memphis urban low-Vectech-income M-Vectech-SCVC site no. 537, collected: 8/12/2002, month: Jul, year: 2002"	"Memphis, TN"	97				
+098.ShelTN.2005	"Shelby Co, TN"	ShelTN	0	98	2	2005	0.49	35.0770	-90.0600	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Memphis, Shelby County, TN (mixed sites)"	98				
+099.LakeGA.1955	"Lakewood, GA"	LakeGA	0	0	103	1955	0.00	34.889	-84.2613	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 1955)"	"Lakewood, Georgia"	99				
+100.SanBCA.1951	"San Bernardino Co, CA"	SanBCA	0	0	57	1951	0.00	34.8253	-116.0833	"Barr, 1957"	"Barr, 1957, DVM ratios (Apr. 23, 1951)"	"San Bernardino Co., California"	100				
+101.FlorAL.1954	"Florence, AL"	FlorAL	2	4	72	1954	0.05	34.7998	-87.6773	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 12, 1954)"	"Florence, Alabama"	101				
+102.ShefAL.1953	"Sheffield, AL"	ShefAL	0	0	12	1953	0.00	34.7651	-87.6986	"Barr, 1957"	"Barr, 1957, DVM ratios (Nov. 18, 1953)"	"Sheffield, Alabama"	102				
+103.TuniMS.1945	"Tunica, MS"	TuniMS	0	0	1	1945	0.00	34.6399	-90.3624	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 7, 1945)"	"Tunica, Mississippi"	103				
+104.CaLeNC.1957	"Camp Lejeune, NC"	CaLeNC	0	0	16	1957	0.00	34.6397	-77.3418	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Camp Lejeune, North Carolina"	104				
+105.BateMS.2005	"Batesville Panola Co, MS"	BateMS	0	88	12	2005	0.44	34.3240	-89.9450	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Batesville, Panola County, MS"	105				
+106.PineAR.1957	"Pine Bluff, AR"	PineAR	0	0	2	1957	0.00	34.2157	-92.014	"Barr, 1957"	"Barr, 1957, DVM ratios (June 17)"	"Pine Bluff, Arkansas"	106				
+107.PlaiTX.1953	"Plainview, TX"	PlaiTX	0	0	17	1953	0.00	34.1848	-101.7068	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug.-Vectech-Sept. 1953)"	"Plainview, Texas"	107				
+108.CucaCA.1957	"Cucamonga San Bernardino Co, CA"	CucaCA	0	0	11	1957	0.00	34.0992	-117.6022	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Cucamonga, San Bernardino Co., California"	108				
+109.RedlCA.1951	"Redlands San Bernardino Co, CA"	RedlCA	0	0	145	1951	0.00	34.055	-117.1827	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 20, 1951)"	"Redlands, San Bernardino Co., California"	109				
+110.LomaCA.1957	"Loma Linda San Bernardino Co, CA"	LomaCA	1	0	0	1957	1.00	34.0538	-117.2611	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Loma Linda, San Bernardino Co., California"	110				
+111.WinfAL.1957	"Winfield, AL"	WinfAL	0	0	4	1957	0.00	33.9282	-87.8163	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Winfield, Alabama"	111				
+112.GurdAR.1957	"Gurdon, AR"	GurdAR	0	0	14	1957	0.00	33.9182	-93.1488	"Barr, 1957"	"Barr, 1957, DVM ratios (July 27 to Aug. 8)"	"Gurdon, Arkansas"	112				
+113.AtlaGA.2007	"Atlanta, GA"	AtlaGA	27	24	49	2007	0.39	33.8070	-84.3600	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, no date provided), collected: not provided, month: Jun-Vectech-Oct, year: 2007"	"Atlanta, GA"	113				
+114.OranCA.1953	"Orange Co, CA"	OranCA	0	1	79	1953	0.01	33.7506	-117.8722	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 30, 1953)"	"Orange Co., California"	114				
+115.OranCA.1953	"Orange Co, CA"	OranCA	0	2	98	1953	0.01	33.7506	-117.8722	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 24, 1953)"	"Orange Co., California"	115				
+116.RiveCA.1957	"Riverside Co, CA"	RiveCA	0	0	1	1957	0.00	33.722	-116.0372	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Riverside Co., California"	116				
+117.LubbTX.1953	"Lubbock, TX"	LubbTX	0	2	42	1953	0.02	33.5856	-101.847	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 1953)"	"Lubbock, Texas"	117				
+118.ColuMS.1944	"Columbus, MS"	ColuMS	0	0	44	1944	0.00	33.4957	-88.4273	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 24, 1944)"	"Columbus, Mississippi"	118				
+119.PhoeAZ.2024	"Phoenix, AZ"	PhoeAZ	0	0	20	2024	0.00	33.4484367	-112.07414	This study	Vectech ID = PHOAZ	Phoenix AZ	119				
+120.GreeMS.1957	"Greenville, MS"	GreeMS	0	0	25	1957	0.00	33.4111	-91.0636	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 1943-Vectech-1944)"	"Greenville, Mississippi"	120				
+121.VaidMS.2005	"Vaiden Carrol Co, MS"	VaidMS	0	72	28	2005	0.36	33.3330	-89.7530	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Vaiden, Carrol County, MS"	121				
+122.ElDoAR.1953	"El Dorado, AR"	ElDoAR	1	3	1	1953	0.71	33.2115	-92.665	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 14, 1953)"	"El Dorado, Arkansas"	122				
+123.MariAZ.2023	"Maricopa Co, AZ"	MariAZ	0	0	16	2023	0.00	33.0736167	-111.9737667	This study	Vectech ID = MARAZ	Maricopa County AZ	123				
+124.DalFTX.2024	"Dallas-Fort Worth, TX"	DalFTX	1	2	16	2024	0.11	32.87272	-97.345164	This study	Vectech ID = DFWTX	Dallas-Fort Worth TX	124				
+125.AubuAL.1957	"Auburn, AL"	AubuAL	0	0	25	1957	0.00	32.6099	-85.4808	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 3, 1953)"	"Auburn, Alabama"	125				
+126.MontAL.1957	"Montgomery, AL"	MontAL	0	0	60	1957	0.00	32.367	-86.3006	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Montgomery, Alabama"	126				
+127.JackMS.2005	"Jackson Heines Co, MS"	JackMS	0	28	72	2005	0.14	32.3110	-90.1740	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Jackson, Heines County, MS"	127				
+128.BrooMS.2005	"Brookhaven Lincoln Co, MS"	BrooMS	0	22	78	2005	0.11	31.5860	-90.4520	"Kothera et al, 2009 "	"Kothera et al, 2009 (microsatellites), Fig 8. summary with percent total reported, collected: 8/1/2005-Vectech-08/30/2005, month: Aug, year: 2005"	"Brookhaven, Lincoln County, MS"	128				
+129.BakeGA.1953	"Baker Co, GA"	BakeGA	0	0	28	1953	0.00	31.3439	-84.4555	"Barr, 1957"	"Barr, 1957, DVM ratios (Sept. 1953)"	"Baker Co., Georgia"	129				
+130.CollTX.2023	"College Station, TX"	CollTX	0	3	17	2023	0.08	30.60044	-96.26893	This study	Vectech ID = COSTX	College Station TX	130				
+131.SlidLA.2024	"Slidell, LA"	SlidLA	0	1	18	2024	0.03	30.327	-89.749	This study	Vectech ID = SLILA	Slidell LA	131				
+132.BeauTX.1954	"Beaumont, TX"	BeauTX	0	0	65	1954	0.00	30.086	-94.1018	"Barr, 1957"	"Barr, 1957, DVM ratios (Aug. 1954)"	"Beaumont, Texas"	132				
+133.AnasFL.2023	"Anastasia, FL"	AnasFL	0	0	19	2023	0.00	29.903108	-81.400743	This study	Vectech ID = ANAFL	Anastasia FL	133				
+134.HousTX.1957	"Houston, TX"	HousTX	0	0	76	1957	0.00	29.7589	-95.3677	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Houston, Texas"	134				
+135.EaglTX.1953	"Eagle Pass, TX"	EaglTX	0	0	2	1953	0.00	28.7084	-100.5039	"Barr, 1957"	"Barr, 1957, DVM ratios (Oct. 3, 1953)"	"Eagle Pass, Texas"	135				
+136.OrlaFL.1957	"Orlando, FL"	OrlaFL	0	0	103	1957	0.00	28.5421	-81.379	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Orlando, Florida"	136				
+137.MiDaFL.2023	"Miami-Dade Co, FL"	MiDaFL	0	0	19	2023	0.00	25.80141	-80.19909	This study	Vectech ID = MIAFL	Miami-Dade County FL	137				
+138.MiamFL.1957	"Miami, FL"	MiamFL	0	0	62	1957	0.00	25.7742	-80.1936	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Miami, Florida"	138				

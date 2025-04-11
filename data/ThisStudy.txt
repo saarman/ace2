@@ -1,0 +1,26 @@
+code	locality	site	pip.count	hyb.count	qui.count	year	h-index	lat	long	ref	notes	orig.locality	order
+001.ByroWA.2023	"Byron, WA"	ByroWA	37	2	0	2023	0.97	46.193	-119.899	This study	Vectech ID = BYRWA	Byron WA	1
+007.CookIL.2023	"Cook Co, IL"	CookIL	17	0	0	2023	1.00	42.031763	-87.930871	This study	Vectech ID = COOIL	Cook County IL	7
+008.CachUT.2023	"Cache Valley (Hyde Park), UT"	CachUT	20	0	0	2023	1.00	41.79696	-111.82005	This study	Vectech ID = USUUT	Cache (Hyde Park) UT	8
+009.BarnMA.2023	"Barnstable Co, MA"	BarnMA	12	0	0	2023	1.00	41.793615	-69.994266	This study	Vectech ID = BARMA	Barnstable County MA	9
+011.BoxEUT.2024	"Box Elder Co, UT"	BoxEUT	20	0	0	2024	1.00	41.699446	-112.16386	This study	Vectech ID = BOXUT	Box Elder County UT	11
+012.OgdeUT.2024	"Ogden, UT"	OgdeUT	7	0	0	2024	1.00	41.203587	-112.04803	This study	Vectech ID = OGDUT	Ogden UT	12
+015.SaltUT.2023	"Salt Lake City, UT"	SaltUT	2	11	7	2023	0.38	40.7480485	-111.96788	This study	Vectech ID = SLCUT	Salt Lake City UT	15
+022.HuntNJ.2023	"Hunterdon, NJ"	HuntNJ	16	2	1	2023	0.89	40.539588	-74.834616	This study	Vectech ID = HUNNJ	Hunterdon NJ	22
+023.SomeNJ.2023	"Somerset, NJ"	SomeNJ	12	3	0	2023	0.90	40.533576	-74.586099	This study	Vectech ID = SOMNJ	Somerset NJ	23
+024.FortCO.2023	"Fort Collins, CO"	FortCO	19	0	0	2023	1.00	40.38428	-104.7894	This study	Vectech ID = CSUCO	Fort Collins CO	24
+025.UteTUT.2024	"Ute Tribal Lands (Yellowstone), UT"	UteTUT	18	0	0	2024	1.00	40.3289	-109.8911	This study	Vectech ID = UTEUT	Ute Tribal Lands (Yellowstone) UT	25
+026.VernUT.2024	"Vernal (Boothill), UT"	VernUT	28	0	0	2024	1.00	40.2618	-109.3511	This study	Vectech ID = VERUT	Vernal (Boothill) UT	26
+028.ProvUT.2024	"Provo, UT"	ProvUT	12	0	0	2024	1.00	40.2006463	-111.62731	This study	Vectech ID = PROUT	Provo UT	28
+035.SuttCA.2023	"Sutter-Yuba, CA"	SuttCA	9	8	1	2023	0.72	39.166466	-121.59845	This study	Vectech ID = SUTCA	Sutter-Yuba CA	35
+038.RockMD.2023	"Rockville, MD"	RockMD	17	3	0	2023	0.93	39.057753	-77.130547	This study	Vectech ID = ROCMD	Rockville MD	38
+041.LincCA.2023	"Lincoln, CA"	LincCA	38	2	0	2023	0.98	38.904465	-121.30633	This study	Vectech ID = LINCA	Lincoln CA	41
+054.MoabUT.2024	"Moab, UT"	MoabUT	5	0	0	2024	1.00	38.59597	-109.57376	This study	Vectech ID = MOAUT	Moab UT	54
+072.StGeUT.2023	"StGeorge, UT"	StGeUT	0	0	38	2023	0.00	37.179	-113.32	This study	Vectech ID = STGUT	St George UT	72
+119.PhoeAZ.2024	"Phoenix, AZ"	PhoeAZ	0	0	20	2024	0.00	33.4484367	-112.07414	This study	Vectech ID = PHOAZ	Phoenix AZ	119
+123.MariAZ.2023	"Maricopa Co, AZ"	MariAZ	0	0	16	2023	0.00	33.0736167	-111.97377	This study	Vectech ID = MARAZ	Maricopa County AZ	123
+124.DalFTX.2024	"Dallas-Fort Worth, TX"	DalFTX	1	2	16	2024	0.11	32.87272	-97.345164	This study	Vectech ID = DFWTX	Dallas-Fort Worth TX	124
+130.CollTX.2023	"College Station, TX"	CollTX	0	3	17	2023	0.08	30.60044	-96.26893	This study	Vectech ID = COSTX	College Station TX	130
+131.SlidLA.2024	"Slidell, LA"	SlidLA	0	1	18	2024	0.03	30.327	-89.749	This study	Vectech ID = SLILA	Slidell LA	131
+133.AnasFL.2023	"Anastasia, FL"	AnasFL	0	0	19	2023	0.00	29.903108	-81.400743	This study	Vectech ID = ANAFL	Anastasia FL	133
+137.MiDaFL.2023	"Miami-Dade Co, FL"	MiDaFL	0	0	19	2023	0.00	25.80141	-80.19909	This study	Vectech ID = MIAFL	Miami-Dade County FL	137
