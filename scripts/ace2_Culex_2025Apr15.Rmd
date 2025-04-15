@@ -32,7 +32,7 @@ Cx. quinquefasciatus = qq
 ```{r}
 # start data frame and name fields
 countsDf <- as.data.frame(counts[,c(2,1,4,5,6,9,10,7,8)])
-names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h-index")
+names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h_index")
 
 # name rows
 rownames(countsDf)<- countsDf$site
@@ -55,13 +55,13 @@ for (i in 1:length(freqsDf[,1])){
 Plot points on map to check data:
 ```{r}
 # Set xpd to NA to allow for plotting in the margins
-par(xpd = NA)
+#par(xpd = NA)
 
 #create and plot coord = long, lat
 coord <- as.data.frame(countsDf[,c("longitude","latitude")])
 
 #plot coordinates onto map
-map("usa")
+map("usa") # world, usa, state, county, etc.
 map(add = T, col = "grey90", fill = TRUE)
 points(coord,col="black",cex=1)
 ```
@@ -71,8 +71,8 @@ Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Convers
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
-# Determine plot order by descending h-index
-plot_order <- rev(order(countsDf$`h-index`))
+# Determine plot order by descending h_index
+plot_order <- rev(order(countsDf$h_index))
 
 # plot pies onto map
 map("usa")
@@ -84,7 +84,7 @@ for (i in plot_order){
           clockwise=TRUE, 
           labels = "", 
           col = c("black","grey","white"), 
-          cex = 1, radius = 1 )
+          cex = 1.5, radius = 1.5 )
 }
 ```
 
@@ -125,23 +125,38 @@ Create a jitter data frame by hand:
 jitterDf <- data.frame(x_jitter = rep(0,25), y_jitter = rep(0,25))
 rownames(jitterDf) <- rownames(countsDf)
 jitterDf[3,] <- c(0,1)
+jitterDf[4,] <- c(5,-1)
 jitterDf[5,] <- c(1,-1)
 jitterDf[6,] <- c(-2,0)
 jitterDf[8,] <- c(2,-3)
-jitterDf[9,] <- c(3,-1)
-jitterDf[14,] <- c(3,1.5)
-jitterDf[16,] <- c(2,-1.5)
+jitterDf[9,] <- c(5,-1)
+jitterDf[14,] <- c(-7,3.5)
+jitterDf[16,] <- c(-6,-1.5)
 jitterDf[19,] <- c(1,1)
 jitterDf[20,] <- c(1,-1)
 ```
+Calculate bounds of map based on coordinates + jitter: 
+```{r}
+# Expand x/y limits by a small margin (e.g., 2 degrees)
+x_range <- range(coord[, 1] + jitterDf[, 1], na.rm = TRUE)
+y_range <- range(coord[, 2] + jitterDf[, 2], na.rm = TRUE)
+
+x_margin <- 2
+y_margin <- 2
+
+x_lim <- c(x_range[1] - x_margin, x_range[2] + x_margin)
+y_lim <- c(y_range[1] - y_margin, y_range[2] + y_margin)
+```
 Add jitter with a line from true origin:
 ```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_ThisStudy.pdf", width = 8, height = 6)
 
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
-# Plot base map
-map("usa")
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
 map(add = TRUE, col = "grey90", fill = TRUE)
 
 for (i in plot_order) {
@@ -163,6 +178,8 @@ for (i in plot_order) {
           clockwise = TRUE,
           labels = "",
           col = c("black", "grey", "white"),
-          cex = 1.2, radius = 1.2)
+          cex = 1.5, radius = 1.5)
 }
+
+#dev.off()
 ```

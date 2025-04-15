@@ -67,7 +67,11 @@ points(coord,col="black",cex=1)
 ```
 
 Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Conversion.R"
+
 ```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_BarrLitThis.pdf", width = 8, height = 6)
+
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
@@ -86,6 +90,7 @@ for (i in plot_order){
           col = c("black","grey","white"), 
           cex = 1, radius = 1 )
 }
+#dev.off()
 ```
 ```{r, eval=F, include = FALSE}
 # Add random jitter, but i don't really like this.
@@ -120,11 +125,11 @@ for (i in plot_order) {
 ```
 
 
-Plot latitude vs h-index:
+Plot latitude vs h-index excluding 0s (pure quinq) and 1s (pure pip):
 ```{r}
 library(ggplot2)
 
-df <- countsDf
+df <- countsDf[countsDf$h_index>0 & countsDf$h_index<1,]
 
 library(dplyr)
 
@@ -149,25 +154,30 @@ period_colors <- c(
   "2020–2024" = "#1f78b4"   # blue
 )
 
-ggplot(df, aes(x = h_index, y = latitude, color = period)) +
+p <- ggplot(df, aes(x = h_index, y = latitude, color = period)) +
   geom_point(size = 3) +
   scale_color_manual(values = period_colors) +
   theme_minimal() +
   labs(x = "H-index", y = "Latitude", color = "Period")
+
+p
+# Save to PDF
+#ggsave("../figs/hindex_latitude_by_period.pdf", plot = p, width = 8, height = 6)
 ```
 Add a line of best fit per period
 ```{r}
 library(ggplot2)
 library(dplyr)
 
-# Example: assuming your df has h_index, latitude, and period
+# Filter groups with more than 4 data points
+df_filtered <- df %>%
+  group_by(period) %>%
+  filter(n() > 4) %>%
+  ungroup()
 
-ggplot(df, aes(x = h_index, y = latitude, color = period)) +
+p2 <- ggplot(df, aes(x = h_index, y = latitude, color = period)) +
   geom_point(size = 2, alpha = 0.7) +
-  geom_smooth(method = "lm", 
-              formula = y ~ poly(x, 2),  # quadratic
-              se = FALSE,                # remove confidence interval
-              linewidth = 1.2) +
+  geom_smooth(data = df_filtered, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
   scale_color_manual(values = c(
     "1940–1960" = "#d73027",
     "1990–1999" = "#fc8d59",
@@ -177,4 +187,76 @@ ggplot(df, aes(x = h_index, y = latitude, color = period)) +
   )) +
   theme_minimal() +
   labs(x = "H-index", y = "Latitude", color = "Period")
+
+p2
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(patchwork)  # for layout
+
+# Full dataset
+df_all <- df
+
+# West/East of Mississippi (arbitrary cutoff: longitude < -90)
+#df_west <- df %>% filter(longitude < -90)
+#df_east <- df %>% filter(longitude >= -90)
+
+# West/East of the Rockies (longitude < -105)
+df_west <- df %>% filter(longitude < -105)
+df_east <- df %>% filter(longitude >= -105)
+
+# Filtered versions for trend lines
+df_all_fit <- df_all %>% group_by(period) %>% filter(n() > 4) %>% ungroup()
+df_west_fit <- df_west %>% group_by(period) %>% filter(n() > 4) %>% ungroup()
+df_east_fit <- df_east %>% group_by(period) %>% filter(n() > 4) %>% ungroup()
+
+# Define color palette
+my_colors <- c(
+  "1940–1960" = "#d73027",
+  "1990–1999" = "#fc8d59",
+  "2000–2009" = "#e6b800",
+  "2010–2019" = "#66c2a5",
+  "2020–2024" = "#1f78b4"
+)
+
+# Top panel: all data
+p_all <- ggplot(df_all, aes(x = h_index, y = latitude, color = period)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(data = df_all_fit, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = my_colors) +
+  theme_minimal() +
+  ylim(30, 47) +
+  labs(title = "All Data", x = "H-index", y = "Latitude", color = "Period")
+
+# Bottom left: west
+p_west <- ggplot(df_west, aes(x = h_index, y = latitude, color = period)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(data = df_west_fit, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = my_colors) +
+  theme_minimal() +
+  ylim(30, 47) +
+  labs(title = "West of the Rockies", x = "H-index", y = "Latitude", color = NULL)
+
+# Bottom right: east
+p_east <- ggplot(df_east, aes(x = h_index, y = latitude, color = period)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(data = df_east_fit, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = my_colors) +
+  theme_minimal() +
+  ylim(30, 47) +
+  labs(title = "East of the Rockies", x = "H-index", y = "Latitude", color = NULL)
+
+# Combine using patchwork
+(p_all + p_west + p_east) +
+  plot_layout(design = "
+  AA
+  AA
+  AA
+  BC
+  ")
+
+
 ```

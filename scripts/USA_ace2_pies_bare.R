@@ -45,7 +45,7 @@ rownames(sitesDf)<- sitesDf$site
 par(xpd = NA)
 
 # plot outline of states
-map("state", col = "grey90", fill = TRUE, mar = rep(10, 4))
+map("usa", col = "grey90", fill = TRUE, mar = rep(10, 4))
 
 # add from data table with x/y offset
 x_offset <- c(0,0,0,5,5+(0.96788-0.82005),3,8.5,-6,0,-6-(.59845-.30633),0,-8,-2,0,0,5,5)
