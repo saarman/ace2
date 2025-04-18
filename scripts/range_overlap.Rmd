@@ -1,0 +1,407 @@
+---
+title: "Geographic overlap of species ranges from SDM"
+author: "Norah Saarman"
+date: "2025-04-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Working from rasters to make polygons of geographic overlap:
+```{r}
+# Load libraries
+library(raster)
+library(terra)
+library(sf)
+library(dplyr)
+library(maps)
+library(ggplot2)
+
+# ----------------------------------------
+# STEP 1: Load and threshold SDMs to binary
+# ----------------------------------------
+
+# Load MaxEnt SDMs as raster layers
+sdm_pipiens <- raster("../gis/culex_pipiens_meansuitability.nc")
+sdm_quinque <- raster("../gis/culex_quinquefasciatus_meansuitability.nc")
+
+# Threshold to binary presence/absence using a 0.5 cutoff
+threshold <- 0.5
+sdm_pipiens_bin <- sdm_pipiens >= threshold
+sdm_quinque_bin <- sdm_quinque >= threshold
+
+# ----------------------------------------
+# STEP 2: Convert binary rasters to sf polygons
+# ----------------------------------------
+
+# Convert binary raster to terra SpatRaster
+sdm_pipiens_v <- terra::rast(sdm_pipiens_bin)
+sdm_quinque_v <- terra::rast(sdm_quinque_bin)
+
+# Convert to polygons (dissolving contiguous presence regions)
+poly_pipiens <- terra::as.polygons(sdm_pipiens_v, dissolve = TRUE)
+poly_quinque <- terra::as.polygons(sdm_quinque_v, dissolve = TRUE)
+
+# Convert terra polygons to sf objects
+poly_pipiens_sf <- st_as_sf(poly_pipiens)
+poly_quinque_sf <- st_as_sf(poly_quinque)
+
+# Rename value column to 'presence' and filter to presence == 1
+names(poly_pipiens_sf)[1] <- "presence"
+names(poly_quinque_sf)[1] <- "presence"
+
+poly_pipiens_sf <- poly_pipiens_sf %>% filter(presence == 1)
+poly_quinque_sf <- poly_quinque_sf %>% filter(presence == 1)
+
+# ----------------------------------------
+# STEP 3: Reproject to Albers Equal Area for area analysis
+# ----------------------------------------
+
+aea_crs <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96")
+
+poly_pipiens_sf <- st_transform(poly_pipiens_sf, aea_crs)
+poly_quinque_sf <- st_transform(poly_quinque_sf, aea_crs)
+
+# ----------------------------------------
+# STEP 4: Calculate overlap and areas
+# ----------------------------------------
+
+# Compute geographic overlap
+overlap_sf <- st_intersection(poly_pipiens_sf, poly_quinque_sf)
+
+# Calculate areas in km²
+area_pipiens_km2 <- sum(st_area(poly_pipiens_sf)) / 1e6
+area_quinque_km2 <- sum(st_area(poly_quinque_sf)) / 1e6
+area_overlap_km2 <- sum(st_area(overlap_sf)) / 1e6
+
+# ----------------------------------------
+# STEP 5: Prepare clipping extent and US base map
+# ----------------------------------------
+
+# Load US state outlines and reproject to match polygons
+us_states <- st_as_sf(map("usa", plot = FALSE, fill = TRUE))
+us_states <- st_transform(us_states, crs = aea_crs)
+
+# Define North America bounding box in WGS84
+bbox_na <- st_as_sfc(st_bbox(c(
+  xmin = -170, xmax = -50,
+  ymin = 5, ymax = 85
+), crs = st_crs(4326)))
+
+# Reproject bbox to Albers for clipping
+bbox_na_sf <- st_transform(bbox_na, crs = aea_crs)
+
+# ----------------------------------------
+# STEP 6: Clean geometries and clip to bbox
+# ----------------------------------------
+
+# Ensure all geometries are valid
+poly_pipiens_sf <- st_make_valid(poly_pipiens_sf)
+poly_quinque_sf <- st_make_valid(poly_quinque_sf)
+overlap_sf <- st_make_valid(overlap_sf)
+us_states <- st_make_valid(us_states)
+bbox_na_sf <- st_make_valid(bbox_na_sf)
+
+# Clip all geometries to North America extent
+poly_pipiens_sf <- st_intersection(poly_pipiens_sf, bbox_na_sf)
+poly_quinque_sf <- st_intersection(poly_quinque_sf, bbox_na_sf)
+overlap_sf <- st_intersection(overlap_sf, bbox_na_sf)
+us_states <- st_intersection(us_states, bbox_na_sf)
+
+# ----------------------------------------
+# STEP 7: Reproject to WGS84 for base R map plotting
+# ----------------------------------------
+
+poly_pipiens_ll <- st_transform(poly_pipiens_sf, crs = 4326)
+poly_quinque_ll <- st_transform(poly_quinque_sf, crs = 4326)
+overlap_ll <- st_transform(overlap_sf, crs = 4326)
+
+```
+
+## STEP 8: Plot using base R map + transparent polygon overlays
+
+```{r}
+# Allow drawing in margins (optional)
+par(xpd = NA)
+
+# Plot USA map (outline and filled states)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+# Overlay SDM ranges
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)       # Blue
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)        # Green
+plot(st_geometry(overlap_ll), col = adjustcolor("#fc8d59", alpha.f = 1), border = NA, add = TRUE)  # Orange overlap
+
+# Add state outlines **after everything else**
+map("state", add = TRUE, col = "black", lwd = 0.5)  # State borders on top
+map("usa", add = TRUE, col = "black", lwd = 1.2)  # State borders on top
+
+# Add sampling points
+counts <- read.csv("../data/ThisStudy.txt", sep = "\t")
+countsSp <- SpatialPoints(coords = cbind(counts$long,counts$lat))
+#points(countsSp,pch=19, cex=.1)
+```
+
+# Combine nearby patches
+
+For mosquitoes like Culex species, where multiple generations of dispersal could easily connect nearby habitat patches within tens of kilometers.
+
+Group overlap polygons that are within 20–50 km  (e.g., 0.3° for ~30 km) of each other into ecologically meaningful zones of secondary contact.
+
+
+```{r}
+# 0. Reproject to equal-area CRS
+overlap_ll_proj <- st_transform(overlap_ll, aea_crs)
+
+# 1. Make valid and extract only polygon parts
+overlap_valid <- st_make_valid(overlap_ll_proj)
+overlap_polygons <- st_collection_extract(overlap_valid, "POLYGON")
+
+# 2. Now (optional) cast each multipolygon to individual polygons
+overlap_parts <- st_cast(overlap_polygons, "POLYGON")
+
+# 2. Buffer outward (~25–30 km dispersal radius ≈ 25,000 meters)
+buffer_dist_meters <- 25000  # 25 km
+overlap_buffered <- st_buffer(overlap_parts, dist = buffer_dist_meters)
+overlap_buffered <- st_make_valid(overlap_buffered)  # ensure valid geometry before union
+
+# 3. Union to merge touching/nearby polygons
+overlap_combined <- st_union(overlap_buffered)
+overlap_combined <- st_make_valid(overlap_combined)  # validate union output
+
+# 4. Buffer inward to approximate original shape
+overlap_combined <- st_buffer(overlap_combined, dist = -buffer_dist_meters)
+overlap_combined <- st_make_valid(overlap_combined)  # final cleanup
+
+# 5. Cast to multipolygon if needed
+overlap_combined <- st_cast(overlap_combined, "MULTIPOLYGON")
+
+# 6. Reproject back to WGS84 for plotting
+overlap_combined <- st_transform(overlap_combined, 4326)
+
+# ---- Plotting ----
+
+# Allow drawing in margins (optional)
+par(xpd = NA)
+
+# Plot USA map (outline and filled states)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+# Overlay SDM ranges
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)       # Blue
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)        # Green
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.9), border = NA, add = TRUE)  # Orange overlap
+
+# Add state outlines AFTER everything else
+map("state", add = TRUE, col = "black", lwd = 0.5)  # State borders on top
+
+```
+
+
+
+
+# Add Kernel Density of regions of predicted overlap:
+
+```{r}
+library(MASS)
+library(maps)
+library(sf)
+
+# --------------------------------------------
+# Use ALL coordinates from overlap polygons
+# --------------------------------------------
+
+# Ensure valid geometry
+overlap_valid <- st_make_valid(overlap_ll)
+
+# Extract all vertex coordinates (this gives many more points than centroids)
+overlap_coords <- st_coordinates(overlap_valid)
+
+# Clean: drop any rows with NAs and duplicates
+overlap_coords <- overlap_coords[complete.cases(overlap_coords), ]
+overlap_coords <- unique(overlap_coords)
+
+# Confirm number of points
+cat("Number of overlap coordinates:", nrow(overlap_coords), "\n")
+
+# --------------------------------------------
+# Compute kernel density surface
+# --------------------------------------------
+
+if (nrow(overlap_coords) >= 5) {
+  dens <- kde2d(overlap_coords[, 1], overlap_coords[, 2], n = 200)
+}
+
+# --------------------------------------------
+# Plot map with kernel density and species ranges
+# --------------------------------------------
+
+par(xpd = NA)
+
+# Base USA map
+map("usa", fill = TRUE, col = "grey90", lwd = 0.2)
+
+# Kernel density surface
+if (exists("dens")) {
+  image(dens, col = hcl.colors(20, "YlOrRd", rev = TRUE), add = TRUE)
+}
+
+# Species SDM polygons
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_ll), col = adjustcolor("#fc8d59", alpha.f = 0.6), border = NA, add = TRUE)
+
+# State outlines
+map("state", add = TRUE, col = "black", lwd = 0.5)
+```
+With reverse weighting to accentuate isolated zones of hybridization:
+```{r}
+library(MASS)
+library(maps)
+library(sf)
+
+# --------------------------------------------
+# Inverse-area weighted point sampling from overlap polygons
+# --------------------------------------------
+
+# Ensure valid geometry and cast to individual polygons
+overlap_valid <- st_make_valid(overlap_ll)
+overlap_parts <- st_cast(overlap_valid, "POLYGON")
+
+# Compute area of each polygon
+areas <- st_area(overlap_parts)
+
+# Inverse weighting (normalize to sum to 1)
+weights <- as.numeric(1 / areas)
+weights <- weights / sum(weights)
+
+# Choose a total number of points to sample (adjust as needed)
+total_points <- 1000
+n_samples <- round(weights * total_points)
+
+# Sample points within each polygon
+sampled_points <- list()
+for (i in seq_along(overlap_parts)) {
+  if (n_samples[i] > 0) {
+    pts <- st_sample(overlap_parts[i], size = n_samples[i], type = "random")
+    sampled_points[[i]] <- pts
+  }
+}
+
+# Sample points within each polygon (as POINT geometries)
+sampled_points <- list()
+for (i in seq_along(overlap_parts)) {
+  if (n_samples[i] > 0) {
+    pts <- st_sample(overlap_parts[i], size = n_samples[i], type = "random")
+    sampled_points[[i]] <- pts
+  }
+}
+
+# Combine all sampled points into a single sfc object
+all_sampled_sfc <- do.call(c, sampled_points)
+
+# Explicitly declare this as an sfc (needed if list is empty or inconsistent)
+all_sampled_sfc <- st_sfc(all_sampled_sfc, crs = st_crs(overlap_ll))
+
+# Wrap it into an sf object
+all_sampled_sf <- st_sf(geometry = all_sampled_sfc)
+
+# Extract coordinates
+sample_coords <- st_coordinates(all_sampled_sf)
+
+# Confirm number of points
+cat("Number of sampled points:", nrow(sample_coords), "\n")
+
+# --------------------------------------------
+# Compute kernel density surface from sampled points
+# --------------------------------------------
+
+if (nrow(sample_coords) >= 5) {
+  dens <- kde2d(sample_coords[, 1], sample_coords[, 2], n = 200)
+}
+
+# --------------------------------------------
+# Plot map with kernel density and species ranges
+# --------------------------------------------
+
+par(xpd = NA)
+
+# Base USA map
+map("usa", fill = TRUE, col = "grey90", lwd = 0.2)
+
+# Kernel density surface
+if (exists("dens")) {
+  image(dens, col = hcl.colors(20, "YlOrRd", rev = TRUE), add = TRUE)
+}
+
+# Species SDM polygons
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_ll), col = adjustcolor("#fc8d59", alpha.f = 0.6), border = NA, add = TRUE)
+
+# State outlines
+map("state", add = TRUE, col = "black", lwd = 0.5)
+```
+Run kernel overlap with the merged overlap:
+
+```{r}
+# Add Kernel Density of regions of predicted overlap:
+
+library(MASS)
+library(maps)
+library(sf)
+
+# --------------------------------------------
+# Use ALL coordinates from the COMBINED overlap polygons
+# --------------------------------------------
+
+# Ensure valid geometry
+overlap_valid <- st_make_valid(overlap_combined)   # <-- use overlap_combined here!
+
+# Extract all vertex coordinates (many more points than centroids)
+overlap_coords <- st_coordinates(overlap_valid)
+
+# Clean: drop any rows with NAs and duplicates
+overlap_coords <- overlap_coords[complete.cases(overlap_coords), ]
+overlap_coords <- unique(overlap_coords)
+
+# Confirm number of points
+cat("Number of overlap coordinates:", nrow(overlap_coords), "\n")
+
+# --------------------------------------------
+# Compute kernel density surface
+# --------------------------------------------
+
+if (nrow(overlap_coords) >= 5) {
+  dens <- kde2d(overlap_coords[, 1], overlap_coords[, 2], n = 200)
+}
+
+# --------------------------------------------
+# Plot map with kernel density and species ranges
+# --------------------------------------------
+
+par(xpd = NA)
+
+# Base USA map
+map("usa", fill = TRUE, col = "grey90", lwd = 0.2)
+
+# Kernel density surface
+if (exists("dens")) {
+  image(dens, col = hcl.colors(20, "YlOrRd", rev = TRUE), add = TRUE)
+}
+
+# Species SDM polygons
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+
+# Overlap regions
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.6), border = NA, add = TRUE)
+
+# State outlines
+map("state", add = TRUE, col = "black", lwd = 0.5)
+```
+

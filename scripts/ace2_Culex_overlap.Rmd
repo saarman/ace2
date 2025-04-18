@@ -1,0 +1,353 @@
+---
+title: "Geographic overlap from SDM and Ace2 results"
+author: "Norah Saarman"
+date: "2025-04-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Load libraries
+library(raster)
+library(terra)
+library(sf)
+library(dplyr)
+library(maps)
+library(ggplot2)
+library(sp)
+library(mapdata)
+library(fields)
+library(mapplots)
+library(clue)
+```
+
+# 1. Load and Process Species Distribution Models (SDMs)
+
+```{r load-sdms}
+# Load MaxEnt SDMs
+sdm_pipiens <- raster("../gis/culex_pipiens_meansuitability.nc")
+sdm_quinque <- raster("../gis/culex_quinquefasciatus_meansuitability.nc")
+
+# Threshold to binary
+threshold <- 0.5
+sdm_pipiens_bin <- sdm_pipiens >= threshold
+sdm_quinque_bin <- sdm_quinque >= threshold
+```
+
+# 2. Convert SDMs to Polygons
+
+```{r convert-polygons}
+# Raster to terra
+sdm_pipiens_v <- terra::rast(sdm_pipiens_bin)
+sdm_quinque_v <- terra::rast(sdm_quinque_bin)
+
+# Raster to polygons
+poly_pipiens <- terra::as.polygons(sdm_pipiens_v, dissolve = TRUE)
+poly_quinque <- terra::as.polygons(sdm_quinque_v, dissolve = TRUE)
+
+# Terra to sf
+poly_pipiens_sf <- st_as_sf(poly_pipiens)
+poly_quinque_sf <- st_as_sf(poly_quinque)
+
+# Filter to presence only
+names(poly_pipiens_sf)[1] <- "presence"
+names(poly_quinque_sf)[1] <- "presence"
+poly_pipiens_sf <- poly_pipiens_sf %>% filter(presence == 1)
+poly_quinque_sf <- poly_quinque_sf %>% filter(presence == 1)
+```
+
+# 3. Project to Albers Equal Area and Calculate Overlap
+
+```{r project-and-overlap}
+# Define CRS
+aea_crs <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96")
+
+# Project
+poly_pipiens_sf <- st_transform(poly_pipiens_sf, aea_crs)
+poly_quinque_sf <- st_transform(poly_quinque_sf, aea_crs)
+
+# Overlap
+overlap_sf <- st_intersection(poly_pipiens_sf, poly_quinque_sf)
+
+# Calculate areas (km²)
+area_pipiens_km2 <- sum(st_area(poly_pipiens_sf)) / 1e6
+area_quinque_km2 <- sum(st_area(poly_quinque_sf)) / 1e6
+area_overlap_km2 <- sum(st_area(overlap_sf)) / 1e6
+```
+
+# 4. Clip to North America and Reproject to WGS84
+
+```{r clip-and-reproject}
+# US base map
+us_states <- st_as_sf(map("usa", plot = FALSE, fill = TRUE))
+us_states <- st_transform(us_states, crs = aea_crs)
+
+# Clip extent
+bbox_na <- st_as_sfc(st_bbox(c(xmin = -170, xmax = -50, ymin = 5, ymax = 85), crs = st_crs(4326)))
+bbox_na_sf <- st_transform(bbox_na, crs = aea_crs)
+
+# Clip
+poly_pipiens_sf <- st_intersection(st_make_valid(poly_pipiens_sf), bbox_na_sf)
+poly_quinque_sf <- st_intersection(st_make_valid(poly_quinque_sf), bbox_na_sf)
+overlap_sf <- st_intersection(st_make_valid(overlap_sf), bbox_na_sf)
+
+# Reproject to WGS84
+poly_pipiens_ll <- st_transform(poly_pipiens_sf, 4326)
+poly_quinque_ll <- st_transform(poly_quinque_sf, 4326)
+overlap_ll <- st_transform(overlap_sf, 4326)
+```
+
+# 5. Visualize SDMs and Overlap
+
+```{r plot-initial-overlap}
+par(xpd = NA)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_ll), col = adjustcolor("#fc8d59", alpha.f = 1), border = NA, add = TRUE)
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+```
+
+# 6. Merge Nearby Overlapping Regions
+
+```{r merge-nearby-overlap}
+# Reproject overlap
+overlap_ll_proj <- st_transform(overlap_ll, aea_crs)
+
+# Make valid and extract polygons
+overlap_valid <- st_make_valid(overlap_ll_proj)
+overlap_polygons <- st_collection_extract(overlap_valid, "POLYGON")
+overlap_parts <- st_cast(overlap_polygons, "POLYGON")
+
+# Buffer outward
+buffer_dist_meters <- 25000
+overlap_buffered <- st_buffer(overlap_parts, dist = buffer_dist_meters)
+overlap_buffered <- st_make_valid(overlap_buffered)
+
+# Merge touching patches
+overlap_combined <- st_union(overlap_buffered)
+overlap_combined <- st_make_valid(overlap_combined)
+
+# Buffer inward
+overlap_combined <- st_buffer(overlap_combined, dist = -buffer_dist_meters)
+overlap_combined <- st_make_valid(overlap_combined)
+
+# Finalize
+overlap_combined <- st_cast(overlap_combined, "MULTIPOLYGON")
+overlap_combined <- st_transform(overlap_combined, 4326)
+```
+
+# 7. Visualize Combined Overlap Regions
+
+```{r plot-combined-overlap}
+#pdf("../figs/overlap_SDM.pdf", width = 8, height = 6)
+par(xpd = NA)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.9), border = NA, add = TRUE)
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+#dev.off()
+```
+
+# 8. Add Sampling Points and Population Structure (Pie Charts)
+
+```{r}
+# Load counts
+counts <- read.csv("../data/ThisStudy.txt", sep = "\t")
+coord <- as.data.frame(counts[,c("long","lat")])
+
+# Prepare
+countsDf <- as.data.frame(counts[,c(2,1,4,5,6,9,10,7,8)])
+names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h_index")
+rownames(countsDf) <- countsDf$site
+
+# Frequencies
+freqsDf <- t(apply(countsDf[,c("pp","pq","qq")], 1, function(row) row / sum(row)))
+freqsDf <- as.matrix(freqsDf)
+
+# Plot pies
+par(xpd = NA)
+plot_order <- rev(order(countsDf$h_index))
+
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+for (i in plot_order) {
+  add.pie(z = freqsDf[i,],
+          x = coord[i,1],
+          y = coord[i,2],
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.5, radius = 1.5)
+}
+```
+# 8. Visualize Combined Overlap Regions and pie charts together
+
+```{r}
+par(xpd = NA)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.9), border = NA, add = TRUE)
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+
+for (i in plot_order) {
+  add.pie(z = freqsDf[i,],
+          x = coord[i,1],
+          y = coord[i,2],
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.5, radius = 1.5)
+}
+```
+
+# 8. Visualize Combined Overlap Regions and Frame Pie Charts
+
+```{r plot-combined-overlap-and-pies}
+#pdf("../figs/ace2_pies_SDM.pdf", width = 8, height = 6)
+
+# Expand x/y limits by a small margin (e.g., 2 degrees)
+x_range <- range(coord[, 1] + jitterDf[, 1], na.rm = TRUE)
+y_range <- range(coord[, 2] + jitterDf[, 2], na.rm = TRUE)
+
+x_margin <- 8
+y_margin <- 8
+
+x_lim <- c(x_range[1] - x_margin, x_range[2] + x_margin)
+y_lim <- c(y_range[1] - y_margin, y_range[2] + y_margin)
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.9), border = NA, add = TRUE)
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+# Allow plotting outside margins
+par(xpd = NA)
+
+# Extract USA map limits
+usa_map <- map("usa", plot = FALSE)
+
+# Calculate USA bounding box
+x_min_map <- min(usa_map$x, na.rm = TRUE)
+x_max_map <- max(usa_map$x, na.rm = TRUE)
+y_min_map <- min(usa_map$y, na.rm = TRUE)
+y_max_map <- max(usa_map$y, na.rm = TRUE)
+
+# Set margins to expand outside the map
+frame_margin_x <- 5  # longitude margin
+frame_margin_y <- 5  # latitude margin
+
+# Define expanded rectangle
+x_min <- x_min_map - frame_margin_x
+x_max <- x_max_map + frame_margin_x
+y_min <- y_min_map - frame_margin_y
+y_max <- y_max_map + frame_margin_y
+
+# Number of pies you want manually:
+n_top <- 8      # include corners
+n_bottom <- 8   # include corners
+n_left <- 4     # exclude corners
+n_right <- 5    # exclude corners
+
+# Create side pies:
+
+# Top: 8 pies including corners
+top_pies <- data.frame(
+  longitude = seq(x_min, x_max, length.out = n_top),
+  latitude = rep(y_max, n_top)
+)
+
+# Right: 5 pies excluding corners
+right_pies <- data.frame(
+  longitude = rep(x_max, n_right),
+  latitude = seq(y_max, y_min, length.out = n_right + 2)[-c(1, n_right + 2)]  # drop corners
+)
+
+# Bottom: 8 pies including corners
+bottom_pies <- data.frame(
+  longitude = seq(x_max, x_min, length.out = n_bottom),
+  latitude = rep(y_min, n_bottom)
+)
+
+# Left: 4 pies excluding corners
+left_pies <- data.frame(
+  longitude = rep(x_min, n_left),
+  latitude = seq(y_min, y_max, length.out = n_left + 2)[-c(1, n_left + 2)]  # drop corners
+)
+
+# Stack pie coordinates clockwise
+pie_coords <- rbind(top_pies, right_pies, bottom_pies, left_pies)
+
+# Check how many pies total
+n_pies_frame <- nrow(pie_coords)
+
+# Number of pies needed = number of sites
+n_sites <- length(plot_order)
+
+# Check if number matches
+if (n_sites > n_pies_frame) {
+  stop("More sites than available pie positions! Increase pie counts.")
+} else if (n_sites < n_pies_frame) {
+  pie_coords <- pie_coords[1:n_sites, ]  # only use as many as needed
+}
+
+# Helper: globally optimal assignment
+assign_sites_optimally <- function(pie_coords, site_coords, site_ids) {
+  colnames(pie_coords) <- c("longitude", "latitude")
+  colnames(site_coords) <- c("longitude", "latitude")
+  
+  dist_matrix <- as.matrix(dist(rbind(pie_coords, site_coords)))[
+    1:nrow(pie_coords), (nrow(pie_coords)+1):(nrow(pie_coords)+nrow(site_coords))
+  ]
+  
+  assignment <- solve_LSAP(dist_matrix)
+  assigned_sites <- site_ids[assignment]
+  return(assigned_sites)
+}
+
+# Assign pies optimally
+site_coords_all <- coord[plot_order, ]
+assignments <- assign_sites_optimally(pie_coords, site_coords_all, plot_order)
+
+# Draw connecting lines and pies
+for (i in seq_along(assignments)) {
+  site_i <- assignments[i]
+  
+  x0 <- coord[site_i, "long"]
+  y0 <- coord[site_i, "lat"]
+  
+  x1 <- pie_coords[i, "longitude"]
+  y1 <- pie_coords[i, "latitude"]
+  
+  segments(x0 = x0, y0 = y0, x1 = x1, y1 = y1, col = "black", lty = 1, lwd = 1)
+  
+  add.pie(z = freqsDf[site_i, ],
+          x = x1,
+          y = y1,
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.5, radius = 1.5)
+}
+#dev.off
+```

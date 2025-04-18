@@ -183,3 +183,123 @@ for (i in plot_order) {
 
 #dev.off()
 ```
+```{r}
+# Load required library
+library(clue)
+
+# Allow plotting outside margins
+par(xpd = NA)
+
+# Extract USA map limits
+usa_map <- map("usa", plot = FALSE)
+
+# Calculate USA bounding box
+x_min_map <- min(usa_map$x, na.rm = TRUE)
+x_max_map <- max(usa_map$x, na.rm = TRUE)
+y_min_map <- min(usa_map$y, na.rm = TRUE)
+y_max_map <- max(usa_map$y, na.rm = TRUE)
+
+# Set margins to expand outside the map
+frame_margin_x <- 5  # longitude margin
+frame_margin_y <- 5  # latitude margin
+
+# Define expanded rectangle
+x_min <- x_min_map - frame_margin_x
+x_max <- x_max_map + frame_margin_x
+y_min <- y_min_map - frame_margin_y
+y_max <- y_max_map + frame_margin_y
+
+# Plot map
+map("usa", xlim = c(x_min, x_max), ylim = c(y_min, y_max))
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+# Number of pies you want manually:
+n_top <- 8      # include corners
+n_bottom <- 8   # include corners
+n_left <- 4     # exclude corners
+n_right <- 5    # exclude corners
+
+# Create side pies:
+
+# Top: 8 pies including corners
+top_pies <- data.frame(
+  longitude = seq(x_min, x_max, length.out = n_top),
+  latitude = rep(y_max, n_top)
+)
+
+# Right: 5 pies excluding corners
+right_pies <- data.frame(
+  longitude = rep(x_max, n_right),
+  latitude = seq(y_max, y_min, length.out = n_right + 2)[-c(1, n_right + 2)]  # drop corners
+)
+
+# Bottom: 8 pies including corners
+bottom_pies <- data.frame(
+  longitude = seq(x_max, x_min, length.out = n_bottom),
+  latitude = rep(y_min, n_bottom)
+)
+
+# Left: 4 pies excluding corners
+left_pies <- data.frame(
+  longitude = rep(x_min, n_left),
+  latitude = seq(y_min, y_max, length.out = n_left + 2)[-c(1, n_left + 2)]  # drop corners
+)
+
+# Stack pie coordinates clockwise
+pie_coords <- rbind(top_pies, right_pies, bottom_pies, left_pies)
+
+# Check how many pies total
+n_pies_frame <- nrow(pie_coords)
+
+# Number of pies needed = number of sites
+n_sites <- length(plot_order)
+
+# Check if number matches
+if (n_sites > n_pies_frame) {
+  stop("More sites than available pie positions! Increase pie counts.")
+} else if (n_sites < n_pies_frame) {
+  pie_coords <- pie_coords[1:n_sites, ]  # only use as many as needed
+}
+
+# Helper: globally optimal assignment
+assign_sites_optimally <- function(pie_coords, site_coords, site_ids) {
+  colnames(pie_coords) <- c("longitude", "latitude")
+  colnames(site_coords) <- c("longitude", "latitude")
+  
+  dist_matrix <- as.matrix(dist(rbind(pie_coords, site_coords)))[
+    1:nrow(pie_coords), (nrow(pie_coords)+1):(nrow(pie_coords)+nrow(site_coords))
+  ]
+  
+  assignment <- solve_LSAP(dist_matrix)
+  assigned_sites <- site_ids[assignment]
+  return(assigned_sites)
+}
+
+# Assign pies optimally
+site_coords_all <- coord[plot_order, ]
+assignments <- assign_sites_optimally(pie_coords, site_coords_all, plot_order)
+
+# Draw connecting lines and pies
+for (i in seq_along(assignments)) {
+  site_i <- assignments[i]
+  
+  x0 <- coord[site_i, "longitude"]
+  y0 <- coord[site_i, "latitude"]
+  
+  x1 <- pie_coords[i, "longitude"]
+  y1 <- pie_coords[i, "latitude"]
+  
+  # Line
+  segments(x0 = x0, y0 = y0, x1 = x1, y1 = y1, col = "black", lty = 1, lwd = 1)
+  
+  # Pie
+  add.pie(z = freqsDf[site_i, ],
+          x = x1,
+          y = y1,
+          clockwise = TRUE,
+          labels = "",
+          col = c("black", "grey", "white"),
+          cex = 1.5, radius = 1.5)
+}
+
+```
