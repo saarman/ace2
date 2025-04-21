@@ -257,6 +257,7 @@ p_east <- ggplot(df_east, aes(x = h_index, y = latitude, color = period)) +
   AA
   AA
   AA
+  AA
   BC
   ")
 

@@ -1,0 +1,5 @@
+"region","total_pp","total_pq","total_qq","total_N","pooled_HWE_p_value"
+"East",57,8,39,104,9.99990000099999e-06
+"Other",148,12,63,223,9.99990000099999e-06
+"Southwest",1,5,69,75,0.765582344176558
+"West",84,12,1,97,1
