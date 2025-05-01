@@ -204,8 +204,8 @@ jitterDf[3,] <- c(0,1)
 jitterDf[4,] <- c(5,-1)
 jitterDf[5,] <- c(1,-1)
 jitterDf[6,] <- c(-2,0)
-jitterDf[7,] <- c(-2,-1)
-jitterDf[8,] <- c(-2,1)
+jitterDf[7,] <- c(-4,-1)
+jitterDf[8,] <- c(-4,1)
 jitterDf[9,] <- c(2,-3)
 jitterDf[10,] <- c(5,-1)
 jitterDf[15,] <- c(-7,3.5)
@@ -261,6 +261,74 @@ for (i in plot_order) {
 
 #dev.off()
 ```
+
+Add jitter with a line from true origin AND fixed sites as small dots:
+Adjust jitter
+```{r}
+# Create a jitter df
+jitterDf <- data.frame(x_jitter = rep(0,26), y_jitter = rep(0,26))
+rownames(jitterDf) <- rownames(countsDf)
+#jitterDf[3,] <- c(0,1)
+#jitterDf[4,] <- c(5,-1)
+#jitterDf[5,] <- c(1,-1)
+#jitterDf[6,] <- c(-2,0)
+jitterDf[7,] <- c(-4,-1.5)
+jitterDf[8,] <- c(-4,2)
+jitterDf[9,] <- c(2,-3)
+jitterDf[10,] <- c(5,-1)
+jitterDf[15,] <- c(-7,3.5)
+jitterDf[17,] <- c(-6,-1.5)
+#jitterDf[20,] <- c(1,1)
+#jitterDf[21,] <- c(1,-1)
+```
+Plot
+```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_ThisStudy.pdf", width = 8, height = 6)
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Add flag for fixed sites and what type of fixed (pp or qq)
+freqs_fixed <- freqsDf[, 1] == 1 | freqsDf[, 3] == 1
+freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
+                           ifelse(freqsDf[, 3] == 1, "qq", NA))
+
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+for (i in plot_order) {
+  jittered_x <- coord[i, 1] + (jitterDf[i, 1])
+  jittered_y <- coord[i, 2] + (jitterDf[i, 2])
+
+  segments(x0 = coord[i, 1],
+           y0 = coord[i, 2],
+           x1 = jittered_x,
+           y1 = jittered_y,
+           col = "black", lty = 1, lwd = 1)
+
+  if (freqs_fixed[i]) {
+    if (freqs_fixed_type[i] == "pp") {
+      # Black dot
+      points(jittered_x, jittered_y, pch = 21, bg = "black", col = "black", cex = 1.2)
+    } else if (freqs_fixed_type[i] == "qq") {
+      # White dot with black border
+      points(jittered_x, jittered_y, pch = 21, bg = "white", col = "black", cex = 1.2)
+    }
+  } else {
+    add.pie(z = freqsDf[i,],
+            x = jittered_x,
+            y = jittered_y,
+            clockwise = TRUE,
+            labels = "",
+            col = c("black", "grey", "white"),
+            cex = 1.5, radius = 1.5)
+  }
+}
+#dev.off()
+```
+
 
 Predicted level of overlapping suitable habitat?
 ```{r}
@@ -387,9 +455,9 @@ r_squared_pred <- summary(lm_pred)$r.squared
 r_squared_pred_text <- paste0("R² = ", round(r_squared_pred, 2))
 
 p2 <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index)) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey40") +
+  #geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey40") +
   geom_point(size = 3, alpha = 0.8, color = "black") +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "#d73027", linewidth = 1.2) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "#1f78b4", linewidth = 1.2) +
   annotate("text", x = 0.05, y = 0.95, label = r_squared_pred_text, hjust = 0, size = 4) +
   theme_minimal() +
   labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", 
@@ -536,16 +604,13 @@ pool_hwe_test <- function(df_zone) {
 
 countsDf$zone <- NULL
 countsDf$zone <- case_when(
-  grepl("CA|OR|WA", countsDf$site) ~ "West",
-  grepl("NJ|MD|MA|DE|CT|NY|VA|FL", countsDf$site) ~ "East",
+  grepl("CA|OR|WA", countsDf$site) ~ "West Coast",
+  grepl("NJ|MD|MA|DE|CT|NY|VA|FL", countsDf$site) ~ "East Coast",
   grepl("TX|LA|IL", countsDf$site) ~ "Central",
-  grepl("UT|CO|AZ", countsDf$site) ~ "Southwest",
+  grepl("UT|CO|AZ", countsDf$site) ~ "Desert West",
   #grepl("UT|CO", countsDf$site) ~ "Mountain",
   TRUE ~ "Other"
 )
-
-# Move St George to Southwest (too far from rest of Mountain)
-#countsDf["072.StGeUT.2023","zone"] <- "Southwest"
 
 # Apply by zone
 summary_zones <- countsDf %>%

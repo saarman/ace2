@@ -1,5 +1,5 @@
 ---
-title: "Historical and Ace2 PCR results, Culex pipiens complex"
+title: "Historical and Ace2 PCR results, Culex pipiens complex, Barr + Lit + This"
 author: "Norah Saarman"
 date: "2024-02-27"
 output: pdf_document
@@ -264,57 +264,4 @@ p_east <- ggplot(df_east, aes(x = h_index, y = latitude, color = period)) +
 
 ```
 
-# NEON ecoclimate Domains
-
-```{r}
-# Load required packages
-library(sf)
-library(dplyr)
-library(ggplot2)
-
-# Read the NEON ecoclimate domain shapefile
-neon_domains <- st_read("~/git/ace2/gis/NEON_Domains.shp")
-
-names(neon_domains)
-
-# define df and Create 'period' column from 'year'
-#df <- countsDf[countsDf$h_index>0 & countsDf$h_index<1,]
-df <- countsDf
-
-# Create period column
-df <- df %>%
-  mutate(
-    period = case_when(
-      year >= 1940 & year <= 1960 ~ "1940–1960",
-      year >= 1990 & year <= 2019 ~ "1990–2019",
-      year >= 2020 & year <= 2024 ~ "2020–2024",
-      TRUE ~ "Other"
-    )
-  )
-
-# Convert to sf and join
-df_sf <- st_as_sf(df, coords = c("longitude", "latitude"), crs = 4326)
-df_sf <- st_transform(df_sf, st_crs(neon_domains))
-df_joined <- st_join(df_sf, neon_domains)
-
-# Extract lat/lon for plotting
-df_joined <- df_joined %>%
-  mutate(
-    longitude = st_coordinates(.)[,1],
-    latitude = st_coordinates(.)[,2]
-  )
-
-# Plot
-ggplot(df_joined, aes(x = h_index, y = latitude, color = period)) +
-  geom_point(size = 2, alpha = 0.7) +
-  geom_smooth(data = df_east_fit, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  scale_color_manual(values = c(
-    "1940–1960" = "#d73027",
-    "1990–2019" = "#e6b800",
-    "2020–2024" = "#1f78b4"
-  )) +
-  facet_wrap(~ domainName) +
-  theme_minimal() +
-  ylim(30, 47) +
-  labs(x = "H-index", y = "Latitude", color = "Period")
-```
+# Zones
