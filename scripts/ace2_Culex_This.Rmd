@@ -262,8 +262,9 @@ for (i in plot_order) {
 #dev.off()
 ```
 
-Add jitter with a line from true origin AND fixed sites as small dots:
-Adjust jitter
+Add jitter with a line from true origin AND fixed sites as small dots: but doesn't match the larger map, not sure if it looks good.  
+
+Adjust jitter, 
 ```{r}
 # Create a jitter df
 jitterDf <- data.frame(x_jitter = rep(0,26), y_jitter = rep(0,26))

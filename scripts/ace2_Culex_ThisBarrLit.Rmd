@@ -94,6 +94,41 @@ for (i in plot_order){
 }
 #dev.off()
 ```
+Plot with small dots for fixed sites... but doesn't look great.
+```{r}
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Add flag for fixed sites and what type of fixed (pp or qq)
+freqs_fixed <- freqsDf[, 1] == 1 | freqsDf[, 3] == 1
+freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
+                           ifelse(freqsDf[, 3] == 1, "qq", NA))
+
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+for (i in plot_order) {
+  if (freqs_fixed[i]) {
+    if (freqs_fixed_type[i] == "pp") {
+      # Black dot
+      points(coord[i,1], coord[i,2], pch = 21, bg = "black", col = "black", cex = 1.2)
+    } else if (freqs_fixed_type[i] == "qq") {
+      # White dot with black border
+      points(coord[i,1], coord[i,2], pch = 21, bg = "white", col = "black", cex = 1.2)
+    }
+  } else {
+    add.pie(z = freqsDf[i,], 
+          x = coord[i,1], 
+          y = coord[i,2], 
+          clockwise=TRUE, 
+          labels = "", 
+          col = c("black","grey","white"), 
+          cex = 1, radius = 1 )
+  }
+}
+```
+
 Plot latitude vs h-index excluding 0s (pure quinq) and 1s (pure pip):
 ```{r}
 library(ggplot2)
