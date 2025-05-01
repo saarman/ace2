@@ -13,7 +13,8 @@ code	locality	site	pip.count	hyb.count	qui.count	year	h-index	lat	long	ref	notes
 012.OgdeUT.2024	"Ogden, UT"	OgdeUT	7	0	0	2024	1.00	41.203587	-112.048028	This study	Vectech ID = OGDUT	Ogden UT	12				
 013.OxfoNJ.1953	"Oxford, NJ"	OxfoNJ	49	0	0	1953	1.00	40.8032	-74.9896	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Oxford, New Jersey"	13				
 014.FortNY.2007	"Fort Totten, NY"	FortNY	84	5	10	2007	0.87	40.7960	-73.7780	"Huang et al, 2011 "	"Huang et al, 2011 (Ace2/CxpG2T/CxpA2d, Fig. 1 percent total reported, long approximated, date provided from previous paper), collected: 06/01/2007-Vectech-10/30/2007, month: Jun-Vectech-Oct, year: 2007"	"Fort Totten, NY"	14				
-015.SaltUT.2023	"Salt Lake City, UT"	SaltUT	2	11	7	2023	0.38	40.74804853	-111.9678782	This study	Vectech ID = SLCUT	Salt Lake City UT	15				
+015.SaltUT.2023	"Salt Lake City, UT"	SaltUTa	2	11	7	2023	0.38	40.7480485	-111.96788	This study	Vectech ID = SLCUT	Salt Lake City UT	15
+015.SaltUT.2018	"Salt Lake City, UT"	SaltUTb	13	2	0	2023	0.38	40.7480485	-111.96788	This study	Bloodmeal project	Salt Lake City UT	16
 016.SaltUT.2021	"Salt Lake City, UT"	SaltUT	9	10	4	2021	0.61	40.7475	-111.9676	"Cope, 2023 "	"Cope, 2023 (Ace2), collected: 8/5/2021, month: Aug, year: 2021"	"Salt Lake City, UT"	16				
 017.GoveNY.1953	"Governor's Island, NY"	GoveNY	15	0	0	1953	1.00	40.6915	-74.0124	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Governor's Island, New York"	17				
 018.SaltUT.1957	"Salt Lake Co, UT*"	SaltUT	40	0	1	1957	0.98	40.6632	-111.9103	"Barr, 1957"	"Barr, 1957, DVM ratios "	"Salt Lake Co., Utah*"	18				

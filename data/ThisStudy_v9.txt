@@ -5,7 +5,8 @@ code	locality	site	pip.count	hyb.count	qui.count	year	h-index	lat	long	ref	notes
 009.BarnMA.2023	"Barnstable Co, MA"	BarnMA	12	0	0	2023	1.00	41.793615	-69.994266	This study	Vectech ID = BARMA	Barnstable County MA	9
 011.BoxEUT.2024	"Box Elder Co, UT"	BoxEUT	20	0	0	2024	1.00	41.699446	-112.16386	This study	Vectech ID = BOXUT	Box Elder County UT	11
 012.OgdeUT.2024	"Ogden, UT"	OgdeUT	7	0	0	2024	1.00	41.203587	-112.04803	This study	Vectech ID = OGDUT	Ogden UT	12
-015.SaltUT.2023	"Salt Lake City, UT"	SaltUT	2	11	7	2023	0.38	40.7480485	-111.96788	This study	Vectech ID = SLCUT	Salt Lake City UT	15
+015.SaltUT.2023	"Salt Lake City, UT"	SaltUTa	2	11	7	2023	0.38	40.7480485	-111.96788	This study	Vectech ID = SLCUT	Salt Lake City UT	15
+015.SaltUT.2018	"Salt Lake City, UT"	SaltUTb	13	2	0	2023	0.38	40.7480485	-111.96788	This study	Bloodmeal project	Salt Lake City UT	16
 022.HuntNJ.2023	"Hunterdon, NJ"	HuntNJ	16	2	1	2023	0.89	40.539588	-74.834616	This study	Vectech ID = HUNNJ	Hunterdon NJ	22
 023.SomeNJ.2023	"Somerset, NJ"	SomeNJ	12	3	0	2023	0.90	40.533576	-74.586099	This study	Vectech ID = SOMNJ	Somerset NJ	23
 024.FortCO.2023	"Fort Collins, CO"	FortCO	19	0	0	2023	1.00	40.38428	-104.7894	This study	Vectech ID = CSUCO	Fort Collins CO	24
