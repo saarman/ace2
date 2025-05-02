@@ -328,6 +328,74 @@ for (i in plot_order) {
 
 #dev.off()
 ```
+Plot using colors from SDM:
+```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_rgb_ThisStudy.pdf", width = 8, height = 6)
+
+#ADJUST the jitter df
+jitterDf <- data.frame(x_jitter = rep(0,26), y_jitter = rep(0,26))
+rownames(jitterDf) <- rownames(countsDf)
+#jitterDf[3,] <- c(0,1)
+#jitterDf[4,] <- c(5,-1)
+#jitterDf[5,] <- c(1,-1)
+#jitterDf[6,] <- c(-2,0)
+jitterDf[7,] <- c(-4,-1.5)
+jitterDf[8,] <- c(-4,2)
+jitterDf[9,] <- c(2,-3)
+jitterDf[10,] <- c(5,-1)
+jitterDf[15,] <- c(-7,3.5)
+jitterDf[17,] <- c(-6,-1.5)
+#jitterDf[20,] <- c(1,1)
+#jitterDf[21,] <- c(1,-1)
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Add flag for fixed sites and what type of fixed (pp or qq)
+freqs_fixed <- freqsDf[, 1] == 1 | freqsDf[, 3] == 1
+freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
+                           ifelse(freqsDf[, 3] == 1, "qq", NA))
+
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+
+for (i in plot_order) {
+  jittered_x <- coord[i, 1] + (jitterDf[i, 1])
+  jittered_y <- coord[i, 2] + (jitterDf[i, 2])
+
+  segments(x0 = coord[i, 1],
+           y0 = coord[i, 2],
+           x1 = jittered_x,
+           y1 = jittered_y,
+           col = "black", lty = 1, lwd = 1)
+
+  if (freqs_fixed[i]) {
+    if (freqs_fixed_type[i] == "pp") {
+      # Black dot
+      points(jittered_x, jittered_y, pch = 21, bg = "#a0a0e7", col = "black", cex = 1.2)
+    } else if (freqs_fixed_type[i] == "qq") {
+      # White dot with black border
+      points(jittered_x, jittered_y, pch = 21, bg = "#b1eba7", col = "black", cex = 1.2)
+    }
+  } else {
+    add.pie(z = freqsDf[i,],
+            x = jittered_x,
+            y = jittered_y,
+            clockwise = TRUE,
+            labels = "",
+            col = c("#a0a0e7", "#fc8d59", "#b1eba7"),
+            cex = 1.5, radius = 1.5)
+  }
+}
+
+#dev.off()
+```
+
 
 # Predicted level of overlapping suitable habitat?
 ```{r}
