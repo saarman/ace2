@@ -94,8 +94,10 @@ for (i in plot_order){
 }
 #dev.off()
 ```
-Plot with small dots for fixed sites... but doesn't look great.
-```{r}
+
+```{r, include=T, eval=T}
+# Plot with small dots for fixed sites... but doesn't look great.
+
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
@@ -712,9 +714,9 @@ pool_hwe_test <- function(df_zone) {
 
 countsDf$zone <- NULL
 countsDf$zone <- case_when(
-  grepl("CA|OR|WA", countsDf$site) ~ "West",
-  grepl("NJ|MD|MA|DE|CT|NY|VA|FL", countsDf$site) ~ "East",
-  grepl("TX|LA|IL", countsDf$site) ~ "Central",
+  grepl("CA|OR|WA", countsDf$site) ~ "West Coast",
+  grepl("NJ|MD|MA|DE|CT|NY|VA|FL|QC|DC|TN|GA|NC", countsDf$site) ~ "East Coast",
+  grepl("TX|LA|IL|LA|MN|ON|KS|MO|AR|AL|MS", countsDf$site) ~ "Central",
   grepl("UT|CO|AZ", countsDf$site) ~ "Southwest",
   #grepl("UT|CO", countsDf$site) ~ "Mountain",
   TRUE ~ "Other"
@@ -741,7 +743,7 @@ library(patchwork)
 library(RColorBrewer)
 
 # Plot to PDF
-#pdf("../figs/hindex_vs_lat-n-pred_ThisBarrLit.pdf", width = 8, height = 5)
+#pdf("../figs/hindex_vs_lat-n-pred.pdf", width = 8, height = 5)
 
 # Define your own fixed palette
 custom_colors <- c(
@@ -762,15 +764,20 @@ color_palette <- setNames(custom_colors[1:n_colors], levels(countsDf$zone))
 # ---------------------------------
 # First plot: H-index vs Latitude
 # ---------------------------------
+library(dplyr)
 
-lm_lat <- lm(latitude ~ h_index, data = countsDf)
-r_squared_lat <- summary(lm_lat)$r.squared
-r_squared_lat_text <- paste0("R² = ", round(r_squared_lat, 2))
+# For p1 (Latitude vs H-index)
+r2_lat <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
 
+# p1 with per-zone R2
 p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
   geom_point(size = 3, alpha = 0.5) +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "black", linewidth = 1.2) +
-  annotate("text", x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - 1, label = r_squared_lat_text, hjust = 0, size = 4) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - as.numeric(factor(zone))*1.5, 
+                               label = paste0("R² = ", round(r2, 2)), color = zone),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
   theme_minimal() +
   labs(x = "H-index (Ace2)", y = "Latitude", title = "H-index vs Latitude", color = "Zone:") +
   xlim(0, 1) +
@@ -780,22 +787,25 @@ p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
 # Second plot: H-index vs Predicted H-index
 # ---------------------------------
 
-lm_pred <- lm(predicted_h_index ~ h_index, data = countsDf)
-r_squared_pred <- summary(lm_pred)$r.squared
-r_squared_pred_text <- paste0("R² = ", round(r_squared_pred, 2))
+# For p2 (Predicted H-index vs H-index)
+r2_pred <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
 
+
+# p2 with per-zone R2
 p2 <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey40") +
   geom_point(size = 3, alpha = 0.5) +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "black", linewidth = 1.2) +
-  annotate("text", x = 0.05, y = 0.95, label = r_squared_pred_text, hjust = 0, size = 4) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(factor(zone))*0.05, 
+                                label = paste0("R² = ", round(r2, 2)), color = zone),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
   theme_minimal() +
   labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", 
        title = "H-index vs Predicted H-index", color = "Zone:") +
   xlim(0, 1) +
   ylim(0, 1) +
   scale_color_manual(values = color_palette)
-
 # ---------------------------------
 # Combine side-by-side
 # ---------------------------------

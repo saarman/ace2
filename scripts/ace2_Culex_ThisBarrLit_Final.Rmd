@@ -1,0 +1,562 @@
+---
+title: "Historical and Ace2 PCR results, Culex pipiens complex, Barr + Lit + This"
+author: "Norah Saarman"
+date: "2024-02-27"
+output: pdf_document
+---
+
+R build: Geospatial 4.4.0 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(maps)
+library(sp)
+library(mapdata)
+source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
+library(fields)
+library(mapplots)
+```
+
+## Import species/hybrid counts per site
+
+```{r}
+counts <- read.csv("../data/Barr1957_plusLit_plusThisStudy.txt", sep = "\t")
+countsSp <- SpatialPoints(coords = cbind(counts$long,counts$lat))
+```
+Genotypes in p/q notation:
+Cx. pipiens = pp
+Cx. quinquefasciatus = qq
+
+
+## Create a dataframe of counts
+```{r}
+# start data frame and name fields
+countsDf <- as.data.frame(counts[,c(2,1,4,5,6,9,10,7,8)])
+names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h_index")
+
+# name rows
+rownames(countsDf)<- countsDf$site
+```
+
+## Pie charts on a map
+Convert counts to proportions (frequency):
+```{r}
+freqsDf <- as.data.frame(countsDf[,c("pp","pq","qq")])
+freqsDf <- as.matrix.data.frame(t(apply(freqsDf, 1, function(row) row / sum(row))))
+```
+
+One pie chart at a time, to check code
+```{r, include=F }
+for (i in 1:length(freqsDf[,1])){
+  pie(freqsDf[i,],main=i,col=c("black","grey","white"),radius=.2,clockwise=TRUE,labels = NA)
+}
+```
+
+Plot points on map to check data:
+```{r}
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+#create and plot coord = long, lat
+coord <- as.data.frame(countsDf[,c("longitude","latitude")])
+
+#plot coordinates onto map
+map("usa")
+map(add = T, col = "grey90", fill = TRUE)
+points(coord,col="black",cex=1,pch=3)
+```
+
+Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Conversion.R"
+
+```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_ThisBarrLit.pdf", width = 8, height = 6)
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Determine plot order by descending h_index
+#plot_order <- rev(order(countsDf$h_index))
+plot_order <- rev(c(order(countsDf$h_index)[countsDf$year > 2021], order(countsDf$h_index)[countsDf$year <= 2021]))
+plot_order <- c(rev(order(countsDf$h_index)[countsDf$year <= 2021]), rev(order(countsDf$h_index)[countsDf$year > 2021]))
+
+# plot pies onto map
+map("usa")
+map(add = T, col = "grey90", fill = TRUE)
+for (i in plot_order){
+  add.pie(z = freqsDf[i,], 
+          x = coord[i,1], 
+          y = coord[i,2], 
+          clockwise=TRUE, 
+          labels = "", 
+          col = c("black","grey","white"), 
+          cex = 1, radius = 1 )
+}
+#dev.off()
+```
+
+```{r, include=T, eval=T}
+# Plot with small dots for fixed sites... but doesn't look great.
+
+# Set xpd to NA to allow for plotting in the margins
+par(xpd = NA)
+
+# Add flag for fixed sites and what type of fixed (pp or qq)
+freqs_fixed <- freqsDf[, 1] == 1 | freqsDf[, 3] == 1
+freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
+                           ifelse(freqsDf[, 3] == 1, "qq", NA))
+
+# Plot map with expanded margins
+map("usa", xlim = x_lim, ylim = y_lim)
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+for (i in plot_order) {
+  if (freqs_fixed[i]) {
+    if (freqs_fixed_type[i] == "pp") {
+      # Black dot
+      points(coord[i,1], coord[i,2], pch = 21, bg = "black", col = "black", cex = 1.2)
+    } else if (freqs_fixed_type[i] == "qq") {
+      # White dot with black border
+      points(coord[i,1], coord[i,2], pch = 21, bg = "white", col = "black", cex = 1.2)
+    }
+  } else {
+    add.pie(z = freqsDf[i,], 
+          x = coord[i,1], 
+          y = coord[i,2], 
+          clockwise=TRUE, 
+          labels = "", 
+          col = c("black","grey","white"), 
+          cex = 1, radius = 1 )
+  }
+}
+```
+
+```{r setup2, include=FALSE}
+# Load libraries
+library(raster)
+library(terra)
+library(sf)
+library(dplyr)
+library(maps)
+library(ggplot2)
+library(sp)
+library(mapdata)
+library(fields)
+library(mapplots)
+library(clue)
+```
+
+# 1. Load and Process Species Distribution Models (SDMs)
+
+```{r load-sdms}
+# Load MaxEnt SDMs
+sdm_pipiens <- raster("../gis/culex_pipiens_meansuitability.nc")
+sdm_quinque <- raster("../gis/culex_quinquefasciatus_meansuitability.nc")
+
+# Threshold to binary
+threshold <- 0.5
+sdm_pipiens_bin <- sdm_pipiens >= threshold
+sdm_quinque_bin <- sdm_quinque >= threshold
+```
+
+# 2. Convert SDMs to Polygons
+
+```{r convert-polygons}
+# Raster to terra
+sdm_pipiens_v <- terra::rast(sdm_pipiens_bin)
+sdm_quinque_v <- terra::rast(sdm_quinque_bin)
+
+# Raster to polygons
+poly_pipiens <- terra::as.polygons(sdm_pipiens_v, dissolve = TRUE)
+poly_quinque <- terra::as.polygons(sdm_quinque_v, dissolve = TRUE)
+
+# Terra to sf
+poly_pipiens_sf <- st_as_sf(poly_pipiens)
+poly_quinque_sf <- st_as_sf(poly_quinque)
+
+# Filter to presence only
+names(poly_pipiens_sf)[1] <- "presence"
+names(poly_quinque_sf)[1] <- "presence"
+poly_pipiens_sf <- poly_pipiens_sf %>% filter(presence == 1)
+poly_quinque_sf <- poly_quinque_sf %>% filter(presence == 1)
+```
+
+# 3. Project to Albers Equal Area and Calculate Overlap
+
+```{r project-and-overlap}
+# Define CRS
+aea_crs <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96")
+
+# Project
+poly_pipiens_sf <- st_transform(poly_pipiens_sf, aea_crs)
+poly_quinque_sf <- st_transform(poly_quinque_sf, aea_crs)
+
+# Overlap
+overlap_sf <- st_intersection(poly_pipiens_sf, poly_quinque_sf)
+
+# Calculate areas (km²)
+area_pipiens_km2 <- sum(st_area(poly_pipiens_sf)) / 1e6
+area_quinque_km2 <- sum(st_area(poly_quinque_sf)) / 1e6
+area_overlap_km2 <- sum(st_area(overlap_sf)) / 1e6
+```
+
+# 4. Clip to North America and Reproject to WGS84
+
+```{r clip-and-reproject}
+# US base map
+us_states <- st_as_sf(map("usa", plot = FALSE, fill = TRUE))
+us_states <- st_transform(us_states, crs = aea_crs)
+
+# Clip extent
+bbox_na <- st_as_sfc(st_bbox(c(xmin = -170, xmax = -50, ymin = 5, ymax = 85), crs = st_crs(4326)))
+bbox_na_sf <- st_transform(bbox_na, crs = aea_crs)
+
+# Clip
+poly_pipiens_sf <- st_intersection(st_make_valid(poly_pipiens_sf), bbox_na_sf)
+poly_quinque_sf <- st_intersection(st_make_valid(poly_quinque_sf), bbox_na_sf)
+overlap_sf <- st_intersection(st_make_valid(overlap_sf), bbox_na_sf)
+
+# Reproject to WGS84
+poly_pipiens_ll <- st_transform(poly_pipiens_sf, 4326)
+poly_quinque_ll <- st_transform(poly_quinque_sf, 4326)
+overlap_ll <- st_transform(overlap_sf, 4326)
+```
+
+
+# 6. Merge Nearby Overlapping zones
+
+```{r merge-nearby-overlap}
+# Reproject overlap
+overlap_ll_proj <- st_transform(overlap_ll, aea_crs)
+
+# Make valid and extract polygons
+overlap_valid <- st_make_valid(overlap_ll_proj)
+overlap_polygons <- st_collection_extract(overlap_valid, "POLYGON")
+overlap_parts <- st_cast(overlap_polygons, "POLYGON")
+
+# Buffer outward
+buffer_dist_meters <- 25000
+overlap_buffered <- st_buffer(overlap_parts, dist = buffer_dist_meters)
+overlap_buffered <- st_make_valid(overlap_buffered)
+
+# Merge touching patches
+overlap_combined <- st_union(overlap_buffered)
+overlap_combined <- st_make_valid(overlap_combined)
+
+# Buffer inward
+overlap_combined <- st_buffer(overlap_combined, dist = -buffer_dist_meters)
+overlap_combined <- st_make_valid(overlap_combined)
+
+# Finalize
+overlap_combined <- st_cast(overlap_combined, "MULTIPOLYGON")
+overlap_combined <- st_transform(overlap_combined, 4326)
+
+#pdf("../figs/overlap_SDM_ThisBarrLit.pdf", width = 8, height = 6)
+par(xpd = NA)
+map("usa")
+map(add = TRUE, col = "grey90", fill = TRUE)
+
+plot(st_geometry(poly_pipiens_ll), col = rgb(0, 0, 1, 0.3), border = NA, add = TRUE)
+plot(st_geometry(poly_quinque_ll), col = rgb(0, 1, 0, 0.3), border = NA, add = TRUE)
+plot(st_geometry(overlap_combined), col = adjustcolor("#fc8d59", alpha.f = 0.9), border = NA, add = TRUE)
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
+
+# Add sampling points, but looks messy:
+# points(coord,col="black",cex=1,pch=3)
+
+#dev.off()
+```
+
+Predicted level of overlapping suitable habitat?
+```{r}
+# ---------------------------------------------
+# Quantify predicted overlap around each sample point
+# ---------------------------------------------
+
+# Step 1: Make sample points an sf object
+samples_sf <- st_as_sf(countsDf, coords = c("longitude", "latitude"), crs = 4326)
+
+# Step 2: Reproject sample points to Albers Equal Area CRS
+samples_sf <- st_transform(samples_sf, crs = aea_crs)
+
+# Step 3: Buffer each point by 30 km (30,000 meters)
+sample_buffers <- st_buffer(samples_sf, dist = 30000)
+
+# Step 4: Prepare overlap_combined layer in same CRS
+overlap_combined_proj <- st_transform(overlap_combined, crs = aea_crs)
+
+# Step 5: Calculate proportion of buffer area that overlaps
+predicted_overlap_prop <- sapply(1:nrow(sample_buffers), function(i) {
+  buf <- sample_buffers[i,]
+  intersection <- st_intersection(buf, overlap_combined_proj)
+  
+  if (nrow(intersection) == 0) {
+    # No overlap
+    overlap_area <- 0
+  } else {
+    # Sum all overlapping parts
+    overlap_area <- sum(st_area(intersection))
+  }
+  
+  buffer_area <- st_area(buf)
+  
+  # Return proportion
+  as.numeric(overlap_area) / as.numeric(buffer_area)
+})
+
+# Step 6: Add predicted overlap to countsDf
+countsDf$predicted_overlap <- predicted_overlap_prop
+```
+# Predicted H-index  
+
+Now, add directionality with 0 = quinq, 1 = pip, to estimate "predicted_h_index"  
+
+Predicted h_index based on **Current** SDM habitat MaxEnt models also included, although I wonder about the logic of this, since climate HAS changed?  
+
+```{r}
+# ---------------------------------------------
+# New: Predict directional hybrid index from habitat around each sampling site
+# ---------------------------------------------
+
+# Step 1: Prepare the pipiens-only and quinque-only polygons
+# (We already have poly_pipiens_ll and poly_quinque_ll, but need to transform)
+poly_pipiens_proj <- st_transform(poly_pipiens_ll, crs = aea_crs)
+poly_quinque_proj <- st_transform(poly_quinque_ll, crs = aea_crs)
+overlap_combined_proj <- st_transform(overlap_combined, crs = aea_crs)  # already done above
+
+# Step 2: Create pip-only and quinque-only polygons (remove overlap area)
+pip_only <- st_difference(poly_pipiens_proj, overlap_combined_proj)
+quinque_only <- st_difference(poly_quinque_proj, overlap_combined_proj)
+
+# Step 3: Calculate areas for each sample buffer
+library(units)  # make sure units package is loaded
+
+predicted_h_index <- sapply(1:nrow(sample_buffers), function(i) {
+  buf <- sample_buffers[i, ]
+  
+  pip_intersect <- st_intersection(buf, pip_only)
+  quinque_intersect <- st_intersection(buf, quinque_only)
+  overlap_intersect <- st_intersection(buf, overlap_combined_proj)
+  
+  pip_area <- if (nrow(pip_intersect) == 0) units::set_units(0, "m^2") else sum(st_area(pip_intersect))
+  quinque_area <- if (nrow(quinque_intersect) == 0) units::set_units(0, "m^2") else sum(st_area(quinque_intersect))
+  overlap_area <- if (nrow(overlap_intersect) == 0) units::set_units(0, "m^2") else sum(st_area(overlap_intersect))
+  
+  total_area <- pip_area + quinque_area + overlap_area
+  
+  if (as.numeric(total_area) == 0) {
+    return(NA)  # no habitat found
+  } else {
+    pred_h <- (pip_area + 0.5 * overlap_area) / total_area
+    return(as.numeric(pred_h))  # strip units at the end
+  }
+})
+# Step 4: Add predicted_h_index to countsDf
+countsDf$predicted_h_index <- predicted_h_index
+
+# Step 5: Quick check and save
+(summary_table <- countsDf[, c("site", "latitude", "longitude", "h_index", "predicted_overlap", "predicted_h_index")])
+
+# Save as CSV
+# write.csv(summary_table, file = "../data/summary_hindex_prediction.csv", row.names = FALSE)
+```
+```{r, include=F, eval=F}
+#Aside: bookmark on colors i like
+zach_colors <- c(
+  "#1f78b4",  # Anna – dark blue
+  "#33a02c",  # Ricei – forest green
+  "#6a3d9a",  # Idas – dark purple
+  "#d73027",  # Melissa – red
+  "#ffb400",  # Warner – mustard
+  "#1dd5c8",  # Alpine – cyan
+  "#fb9a99"   # Jackson – pink
+)
+```
+
+# Plot h_index versus predicted_h_index, latitude, climate, PCA of climate
+```{r}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+```
+Define hybrid zones
+```{r}
+# Define hybrid zones:
+
+countsDf$zone <- NULL
+countsDf$zone <- case_when(
+  grepl("CA|OR|WA", countsDf$site) ~ "West Coast",
+  grepl("NJ|MD|MA|DE|CT|NY|VA|FL|QC|DC|TN|GA|NC", countsDf$site) ~ "East Coast",
+  grepl("TX|LA|IL|LA|MN|ON|KS|MO|AR|AL|MS", countsDf$site) ~ "Central",
+  grepl("UT|CO|AZ", countsDf$site) ~ "South/Mtn West",
+  #grepl("UT|CO", countsDf$site) ~ "Mountain",
+  TRUE ~ "Other"
+)
+
+# Move St George to Southwest (too far from rest of Mountain)
+#countsDf["072.StGeUT.2023","zone"] <- "Southwest"
+
+```
+
+## H-index versus Predicted H-index
+
+Plot by hybrid zone, East to West 
+```{r, warning=FALSE}
+# Make sure hybrid zones have desired factor order
+countsDf$zone <- factor(countsDf$zone, levels = c("East Coast", "Central", "South/Mtn West", "West Coast", "Other"))
+
+# Define zone color palette
+zone_colors <- c(
+  "East Coast" = "#d73027", 
+  "Central" =    "#fc8d59", 
+  "South/Mtn West" = "#e6b800", 
+  "West Coast" ="#1f78b4",
+  "Other" = "grey60"           # grey
+)
+
+# Calculate R2 by zone
+r2_zone <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
+
+# Create new labels with R2 included
+zone_labels <- paste0(r2_zone$zone, " (R² = ", round(r2_zone$r2, 2), ")")
+names(zone_labels) <- r2_zone$zone
+
+# Add plot
+p_zone <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = zone_colors, labels = zone_labels) +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)",
+       title = "H-index vs Predicted H-index", color = "Hybrid Zone") +
+  theme_minimal()
+
+p_zone
+```
+Side by side with Latitude
+```{r, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+# Create shared color scale
+zone_scale <- scale_color_manual(values = zone_colors, name = "Zone:")
+
+# Shared theme for both plots
+shared_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    legend.position = "bottom",  # <-- Legend at bottom
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 8),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+# ---------------------------------------
+# H-index vs Predicted H-index
+# ---------------------------------
+
+r2_pred <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
+
+p2 <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(factor(zone)) * 0.05, 
+                                label = paste0("R² = ", round(r2, 2)), color = zone),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
+  theme_minimal() +
+  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", title = "Predicted H-index", color = "Zone:") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  scale_color_manual(values = color_palette)
+
+
+# ---------------------------------------
+#  H-index vs Latitude
+# ---------------------------------------
+r2_lat <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
+
+p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - as.numeric(factor(zone)) * 1.5, 
+                               label = paste0("R² = ", round(r2, 2)), color = zone),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
+  theme_minimal() +
+  labs(x = "H-index (Ace2)", y = "Latitude", title = "Latitude", color = "Zone:") +
+  xlim(0, 1) +
+  scale_color_manual(values = color_palette)
+
+
+# ---------------------------------------
+# Combine plots with unified legend at bottom
+# ---------------------------------------
+
+(p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
+```
+Plot h_index vs latitude by year:
+```{r}
+library(ggplot2)
+
+# Choose to include pure or not
+#df <- countsDf[countsDf$h_index>0 & countsDf$h_index<1,]
+df <- countsDf
+
+library(dplyr)
+
+df <- df %>%
+  mutate(
+    period = case_when(
+      year >= 1940 & year <= 1960 ~ "1940–1960",
+      year >= 1990 & year <= 1999 ~ "1990–1999",
+      year >= 2000 & year <= 2009 ~ "2000–2009",
+      year >= 2010 & year <= 2019 ~ "2010–2019",
+      year >= 2020 & year <= 2024 ~ "2020–2024",
+      TRUE ~ "Other"  # fallback for unexpected years
+    )
+  )
+
+# Optional: custom colors to match the legend in your image
+period_colors <- c(
+  "1940–1960" = "#d73027",  # red
+  "1990–1999" = "#fc8d59",  # orange
+  "2000–2009" = "#e6b800",  # yellowish
+  "2010–2019" = "#66c2a5",  # greenish teal
+  "2020–2024" = "#1f78b4"   # blue
+)
+
+library(ggplot2)
+library(dplyr)
+
+# Filter groups with more than 4 data points
+df_filtered <- df %>%
+  group_by(period) %>%
+  filter(n() > 4) %>%
+  ungroup()
+
+p2 <- ggplot(df, aes(x = h_index, y = latitude, color = period)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(data = df_filtered, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = c(
+    "1940–1960" = "#d73027",
+    "1990–1999" = "#fc8d59",
+    "2000–2009" = "#e6b800",
+    "2010–2019" = "#66c2a5",
+    "2020–2024" = "#1f78b4"
+  )) +
+  theme_minimal() +
+  labs(x = "H-index", y = "Latitude", color = "Period")
+
+p2
+
+# ggsave("../figs/hindex_latitude_by_period_ThisBarrLit.pdf", plot = p2, width = 8, height = 6)
+```
+
