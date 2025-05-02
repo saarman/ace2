@@ -261,10 +261,10 @@ for (i in plot_order) {
 
 #dev.off()
 ```
-
-```{r, eval = FALSE, include = FALSE}
-# Add jitter with a line from true origin AND fixed sites as small dots: 
-# but doesn't match the larger map, not sure if it looks good.  
+Add jitter with a line from true origin AND fixed sites as small dots
+```{r}
+# Open PDF device
+#pdf("../figs/ace2_pies_ThisStudy.pdf", width = 8, height = 6)
 
 #ADJUST the jitter df
 jitterDf <- data.frame(x_jitter = rep(0,26), y_jitter = rep(0,26))
@@ -282,9 +282,6 @@ jitterDf[17,] <- c(-6,-1.5)
 #jitterDf[20,] <- c(1,1)
 #jitterDf[21,] <- c(1,-1)
 
-# Open PDF device
-#pdf("../figs/ace2_pies_ThisStudy.pdf", width = 8, height = 6)
-
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
@@ -296,6 +293,9 @@ freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
 # Plot map with expanded margins
 map("usa", xlim = x_lim, ylim = y_lim)
 map(add = TRUE, col = "grey90", fill = TRUE)
+
+
+map("state", add = TRUE, col = "black", lwd = 0.5)
 
 for (i in plot_order) {
   jittered_x <- coord[i, 1] + (jitterDf[i, 1])
@@ -325,6 +325,7 @@ for (i in plot_order) {
             cex = 1.5, radius = 1.5)
   }
 }
+
 #dev.off()
 ```
 
