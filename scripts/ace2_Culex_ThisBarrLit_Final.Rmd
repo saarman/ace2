@@ -17,48 +17,48 @@ library(fields)
 library(mapplots)
 ```
 
-## Import species/hybrid counts per site
+## Import species/hybrid countsAll per site
 
 ```{r}
-counts <- read.csv("../data/Barr1957_plusLit_plusThisStudy.txt", sep = "\t")
-countsSp <- SpatialPoints(coords = cbind(counts$long,counts$lat))
+countsAll <- read.csv("../data/Barr1957_plusLit_plusThisStudy.txt", sep = "\t")
+countsAllSp <- SpatialPoints(coords = cbind(countsAll$long,countsAll$lat))
 ```
 Genotypes in p/q notation:
 Cx. pipiens = pp
 Cx. quinquefasciatus = qq
 
 
-## Create a dataframe of counts
-```{r}
+## Create a dataframe of countsAll
+```{r, warning = FALSE}
 # start data frame and name fields
-countsDf <- as.data.frame(counts[,c(2,1,4,5,6,9,10,7,8)])
-names(countsDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h_index")
+countsAllDf <- as.data.frame(countsAll[,c(2,1,4,5,6,9,10,7,8)])
+names(countsAllDf) <- c("locality","site","pp","pq","qq","latitude","longitude","year","h_index")
 
 # name rows
-rownames(countsDf)<- countsDf$site
+rownames(countsAllDf)<- countsAllDf$site
 ```
 
 ## Pie charts on a map
-Convert counts to proportions (frequency):
-```{r}
-freqsDf <- as.data.frame(countsDf[,c("pp","pq","qq")])
+Convert countsAll to proportions (frequency):
+```{r, warning = FALSE}
+freqsDf <- as.data.frame(countsAllDf[,c("pp","pq","qq")])
 freqsDf <- as.matrix.data.frame(t(apply(freqsDf, 1, function(row) row / sum(row))))
 ```
 
 One pie chart at a time, to check code
-```{r, include=F }
+```{r, include=F , warning = FALSE}
 for (i in 1:length(freqsDf[,1])){
   pie(freqsDf[i,],main=i,col=c("black","grey","white"),radius=.2,clockwise=TRUE,labels = NA)
 }
 ```
 
 Plot points on map to check data:
-```{r}
+```{r, warning = FALSE}
 # Set xpd to NA to allow for plotting in the margins
 par(xpd = NA)
 
 #create and plot coord = long, lat
-coord <- as.data.frame(countsDf[,c("longitude","latitude")])
+coord <- as.data.frame(countsAllDf[,c("longitude","latitude")])
 
 #plot coordinates onto map
 map("usa")
@@ -68,7 +68,7 @@ points(coord,col="black",cex=1,pch=3)
 
 Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Conversion.R"
 
-```{r}
+```{r, warning = FALSE}
 # Open PDF device
 #pdf("../figs/ace2_pies_ThisBarrLit.pdf", width = 8, height = 6)
 
@@ -76,9 +76,9 @@ Add pies to map following: "http://membres-timc.imag.fr/Olivier.Francois/Convers
 par(xpd = NA)
 
 # Determine plot order by descending h_index
-#plot_order <- rev(order(countsDf$h_index))
-plot_order <- rev(c(order(countsDf$h_index)[countsDf$year > 2021], order(countsDf$h_index)[countsDf$year <= 2021]))
-plot_order <- c(rev(order(countsDf$h_index)[countsDf$year <= 2021]), rev(order(countsDf$h_index)[countsDf$year > 2021]))
+#plot_order <- rev(order(countsAllDf$h_index))
+plot_order <- rev(c(order(countsAllDf$h_index)[countsAllDf$year > 2021], order(countsAllDf$h_index)[countsAllDf$year <= 2021]))
+plot_order <- c(rev(order(countsAllDf$h_index)[countsAllDf$year <= 2021]), rev(order(countsAllDf$h_index)[countsAllDf$year > 2021]))
 
 # plot pies onto map
 map("usa")
@@ -107,7 +107,7 @@ freqs_fixed_type <- ifelse(freqsDf[, 1] == 1, "pp",
                            ifelse(freqsDf[, 3] == 1, "qq", NA))
 
 # Plot map with expanded margins
-map("usa", xlim = x_lim, ylim = y_lim)
+map("usa")
 map(add = TRUE, col = "grey90", fill = TRUE)
 
 for (i in plot_order) {
@@ -148,7 +148,7 @@ library(clue)
 
 # 1. Load and Process Species Distribution Models (SDMs)
 
-```{r load-sdms}
+```{r load-sdms, warning = FALSE}
 # Load MaxEnt SDMs
 sdm_pipiens <- raster("../gis/culex_pipiens_meansuitability.nc")
 sdm_quinque <- raster("../gis/culex_quinquefasciatus_meansuitability.nc")
@@ -161,7 +161,7 @@ sdm_quinque_bin <- sdm_quinque >= threshold
 
 # 2. Convert SDMs to Polygons
 
-```{r convert-polygons}
+```{r convert-polygons, warning = FALSE}
 # Raster to terra
 sdm_pipiens_v <- terra::rast(sdm_pipiens_bin)
 sdm_quinque_v <- terra::rast(sdm_quinque_bin)
@@ -183,7 +183,7 @@ poly_quinque_sf <- poly_quinque_sf %>% filter(presence == 1)
 
 # 3. Project to Albers Equal Area and Calculate Overlap
 
-```{r project-and-overlap}
+```{r project-and-overlap, warning = FALSE}
 # Define CRS
 aea_crs <- st_crs("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96")
 
@@ -202,7 +202,7 @@ area_overlap_km2 <- sum(st_area(overlap_sf)) / 1e6
 
 # 4. Clip to North America and Reproject to WGS84
 
-```{r clip-and-reproject}
+```{r clip-and-reproject, warning = FALSE}
 # US base map
 us_states <- st_as_sf(map("usa", plot = FALSE, fill = TRUE))
 us_states <- st_transform(us_states, crs = aea_crs)
@@ -225,7 +225,7 @@ overlap_ll <- st_transform(overlap_sf, 4326)
 
 # 6. Merge Nearby Overlapping zones
 
-```{r merge-nearby-overlap}
+```{r merge-nearby-overlap, warning = FALSE}
 # Reproject overlap
 overlap_ll_proj <- st_transform(overlap_ll, aea_crs)
 
@@ -269,13 +269,13 @@ map("state", add = TRUE, col = "black", lwd = 0.5)
 ```
 
 Predicted level of overlapping suitable habitat?
-```{r}
+```{r, warning=FALSE}
 # ---------------------------------------------
 # Quantify predicted overlap around each sample point
 # ---------------------------------------------
 
 # Step 1: Make sample points an sf object
-samples_sf <- st_as_sf(countsDf, coords = c("longitude", "latitude"), crs = 4326)
+samples_sf <- st_as_sf(countsAllDf, coords = c("longitude", "latitude"), crs = 4326)
 
 # Step 2: Reproject sample points to Albers Equal Area CRS
 samples_sf <- st_transform(samples_sf, crs = aea_crs)
@@ -305,8 +305,8 @@ predicted_overlap_prop <- sapply(1:nrow(sample_buffers), function(i) {
   as.numeric(overlap_area) / as.numeric(buffer_area)
 })
 
-# Step 6: Add predicted overlap to countsDf
-countsDf$predicted_overlap <- predicted_overlap_prop
+# Step 6: Add predicted overlap to countsAllDf
+countsAllDf$predicted_overlap <- predicted_overlap_prop
 ```
 # Predicted H-index  
 
@@ -314,7 +314,7 @@ Now, add directionality with 0 = quinq, 1 = pip, to estimate "predicted_h_index"
 
 Predicted h_index based on **Current** SDM habitat MaxEnt models also included, although I wonder about the logic of this, since climate HAS changed?  
 
-```{r}
+```{r, warning = FALSE}
 # ---------------------------------------------
 # New: Predict directional hybrid index from habitat around each sampling site
 # ---------------------------------------------
@@ -352,11 +352,11 @@ predicted_h_index <- sapply(1:nrow(sample_buffers), function(i) {
     return(as.numeric(pred_h))  # strip units at the end
   }
 })
-# Step 4: Add predicted_h_index to countsDf
-countsDf$predicted_h_index <- predicted_h_index
+# Step 4: Add predicted_h_index to countsAllDf
+countsAllDf$predicted_h_index <- predicted_h_index
 
 # Step 5: Quick check and save
-(summary_table <- countsDf[, c("site", "latitude", "longitude", "h_index", "predicted_overlap", "predicted_h_index")])
+(summary_table <- countsAllDf[, c("site", "latitude", "longitude", "h_index", "predicted_overlap", "predicted_h_index")])
 
 # Save as CSV
 # write.csv(summary_table, file = "../data/summary_hindex_prediction.csv", row.names = FALSE)
@@ -374,74 +374,34 @@ zach_colors <- c(
 )
 ```
 
-# Plot h_index versus predicted_h_index, latitude, climate, PCA of climate
-```{r}
+# Plot h_index versus predicted_h_index, latitude, etc...
+
+## By Zone: H-index versus Predicted H-index and Latitude
+```{r, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(patchwork)
-```
-Define hybrid zones
-```{r}
+
 # Define hybrid zones:
 
-countsDf$zone <- NULL
-countsDf$zone <- case_when(
-  grepl("CA|OR|WA", countsDf$site) ~ "West Coast",
-  grepl("NJ|MD|MA|DE|CT|NY|VA|FL|QC|DC|TN|GA|NC", countsDf$site) ~ "East Coast",
-  grepl("TX|LA|IL|LA|MN|ON|KS|MO|AR|AL|MS", countsDf$site) ~ "Central",
-  grepl("UT|CO|AZ", countsDf$site) ~ "South/Mtn West",
-  #grepl("UT|CO", countsDf$site) ~ "Mountain",
-  TRUE ~ "Other"
+countsAllDf$zone <- NULL
+countsAllDf$zone <- case_when(
+  grepl("CA|OR|WA", countsAllDf$site) ~ "West Coast",
+  grepl("NJ|MD|MA|DE|CT|NY|VA|FL|QC|DC|TN|GA|NC", countsAllDf$site) ~ "East Coast",
+  grepl("TX|LA|IL|LA|MN|ON|KS|MO|AR|AL|MS", countsAllDf$site) ~ "Central",
+  grepl("UT|CO|AZ", countsAllDf$site) ~ "Mtn/Southwest"
 )
 
-# Move St George to Southwest (too far from rest of Mountain)
-#countsDf["072.StGeUT.2023","zone"] <- "Southwest"
-
-```
-
-## H-index versus Predicted H-index
-
-Plot by hybrid zone, East to West 
-```{r, warning=FALSE}
-# Make sure hybrid zones have desired factor order
-countsDf$zone <- factor(countsDf$zone, levels = c("East Coast", "Central", "South/Mtn West", "West Coast", "Other"))
+# Control order by making it a factor
+countsAllDf$zone <- factor(countsAllDf$zone, levels = c("West Coast", "Mtn/Southwest", "Central", "East Coast"))
 
 # Define zone color palette
 zone_colors <- c(
-  "East Coast" = "#d73027", 
-  "Central" =    "#fc8d59", 
-  "South/Mtn West" = "#e6b800", 
-  "West Coast" ="#1f78b4",
-  "Other" = "grey60"           # grey
+   "Mtn/Southwest" = "#d73027", 
+   "Central" =   "#6a3d9a", 
+   "West Coast" = "#e6b800", 
+   "East Coast" ="#1f78b4"
 )
-
-# Calculate R2 by zone
-r2_zone <- countsDf %>%
-  group_by(zone) %>%
-  summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
-
-# Create new labels with R2 included
-zone_labels <- paste0(r2_zone$zone, " (R² = ", round(r2_zone$r2, 2), ")")
-names(zone_labels) <- r2_zone$zone
-
-# Add plot
-p_zone <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
-  geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  scale_color_manual(values = zone_colors, labels = zone_labels) +
-  xlim(0, 1) +
-  ylim(0, 1) +
-  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)",
-       title = "H-index vs Predicted H-index", color = "Hybrid Zone") +
-  theme_minimal()
-
-p_zone
-```
-Side by side with Latitude
-```{r, warning=FALSE}
-library(ggplot2)
-library(dplyr)
-library(patchwork)
 
 # Create shared color scale
 zone_scale <- scale_color_manual(values = zone_colors, name = "Zone:")
@@ -460,103 +420,177 @@ shared_theme <- theme_minimal(base_size = 10) +
 # H-index vs Predicted H-index
 # ---------------------------------
 
-r2_pred <- countsDf %>%
+r2_pred <- countsAllDf %>%
   group_by(zone) %>%
   summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
 
-p2 <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
-  geom_point(size = 3, alpha = 0.5) +
+p2 <- ggplot(countsAllDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
+  geom_point(size = 3, alpha = 0.5, shape = 16) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(factor(zone)) * 0.05, 
+  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(zone) * 0.05, 
                                 label = paste0("R² = ", round(r2, 2)), color = zone),
             hjust = 0, size = 3.5, inherit.aes = FALSE) +
   theme_minimal() +
-  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", title = "Predicted H-index", color = "Zone:") +
+  labs(x = "H-index", y = "Predicted H-index (from SDM)", title = "Predicted H-index", color = "Zone:") +
   xlim(0, 1) +
   ylim(0, 1) +
-  scale_color_manual(values = color_palette)
+  scale_color_manual(values = zone_colors)
+  guides(color = guide_legend(override.aes = list(alpha = 1, shape = NA, linetype = 1)))
 
 
 # ---------------------------------------
 #  H-index vs Latitude
 # ---------------------------------------
-r2_lat <- countsDf %>%
+r2_lat <- countsAllDf %>%
   group_by(zone) %>%
   summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
 
-p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
-  geom_point(size = 3, alpha = 0.5) +
+p1 <- ggplot(countsAllDf, aes(x = h_index, y = latitude, color = zone)) +
+  geom_point(size = 3, alpha = 0.5, shape = 16) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - as.numeric(factor(zone)) * 1.5, 
+  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsAllDf$latitude, na.rm = TRUE) - as.numeric(zone) * 1.5, 
                                label = paste0("R² = ", round(r2, 2)), color = zone),
             hjust = 0, size = 3.5, inherit.aes = FALSE) +
   theme_minimal() +
-  labs(x = "H-index (Ace2)", y = "Latitude", title = "Latitude", color = "Zone:") +
+  labs(x = "H-index", y = "Latitude", title = "Latitude", color = "Zone:") +
   xlim(0, 1) +
-  scale_color_manual(values = color_palette)
+  scale_color_manual(values = zone_colors)
+  guides(color = guide_legend(override.aes = list(alpha = 1, shape = NA, linetype = 1)))
+
+# ---------------------------------------
+# Combine plots with unified legend at bottom
+# ---------------------------------------
+
+# Define the plot object
+final_plot  <- (p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
+
+  final_plot
+# Save as PDF with specific width and height (in inches)
+#ggsave("../figs/h_index_lm_all_by_zone.pdf", plot = final_plot, width = 7, height = 4, units = "in")
+```
+## By Year: H-index vs Predicted H-index and Latitude
+
+```{r, warning = FALSE}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+countsAllDf <- countsAllDf %>%
+  mutate(time_frame = case_when(
+    year >= 1939 & year <= 1961 ~ "1940-1960",
+    year >= 1989 & year <= 2019 ~ "1990-2019",
+    year >= 2020 & year <= 2024 ~ "2020-2024",
+    TRUE ~ "Other"
+  ))
+
+# Optional: Make time_frame a factor to control order
+countsAllDf$time_frame <- factor(countsAllDf$time_frame, 
+                                 levels = c("1940-1960", "1990-2019", "2020-2024"))
+
+time_frame_colors <- c("1940-1960" = "#A7A9D1",  # muted lavender/blue
+                       "1990-2019" = "#78A9CF",  # moderate blue
+                       "2020-2024" = "#80CBC4")  # aqua-green, clearly distinct
+ 
+time_frame_scale <- scale_color_manual(values = time_frame_colors, name = "Time Frame:")
+
+# Shared theme
+shared_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    legend.position = "bottom",
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 8),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+# ---------------------------------------
+# H-index vs Predicted H-index
+# ---------------------------------------
+
+r2_pred <- countsAllDf %>%
+  group_by(time_frame) %>%
+  summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
+
+p2 <- ggplot(countsAllDf, aes(x = h_index, y = predicted_h_index, color = time_frame)) +
+  geom_point(size = 3, alpha = 0.5, shape = 16) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(time_frame) * 0.05, 
+                                label = paste0("R² = ", round(r2, 2)), color = time_frame),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
+  shared_theme +
+  labs(x = "H-index", y = "Predicted H-index (from SDM)", title = "Predicted H-index", color = "Time Frame:") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  time_frame_scale
+
+
+# ---------------------------------------
+#  H-index vs Latitude
+# ---------------------------------------
+
+r2_lat <- countsAllDf %>%
+  group_by(time_frame) %>%
+  summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
+
+p1 <- ggplot(countsAllDf, aes(x = h_index, y = latitude, color = time_frame)) +
+  geom_point(size = 3, alpha = 0.5, shape = 16) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsAllDf$latitude, na.rm = TRUE) - as.numeric(time_frame) * 1.5, 
+                               label = paste0("R² = ", round(r2, 2)), color = time_frame),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
+  shared_theme +
+  labs(x = "H-index", y = "Latitude", title = "Latitude", color = "Time Frame:") +
+  xlim(0, 1) +
+  time_frame_scale
 
 
 # ---------------------------------------
 # Combine plots with unified legend at bottom
 # ---------------------------------------
 
-(p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
-```
-Plot h_index vs latitude by year:
-```{r}
-library(ggplot2)
+# Define the plot object
+final_plot  <- (p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
 
-# Choose to include pure or not
-#df <- countsDf[countsDf$h_index>0 & countsDf$h_index<1,]
-df <- countsDf
-
-library(dplyr)
-
-df <- df %>%
-  mutate(
-    period = case_when(
-      year >= 1940 & year <= 1960 ~ "1940–1960",
-      year >= 1990 & year <= 1999 ~ "1990–1999",
-      year >= 2000 & year <= 2009 ~ "2000–2009",
-      year >= 2010 & year <= 2019 ~ "2010–2019",
-      year >= 2020 & year <= 2024 ~ "2020–2024",
-      TRUE ~ "Other"  # fallback for unexpected years
-    )
-  )
-
-# Optional: custom colors to match the legend in your image
-period_colors <- c(
-  "1940–1960" = "#d73027",  # red
-  "1990–1999" = "#fc8d59",  # orange
-  "2000–2009" = "#e6b800",  # yellowish
-  "2010–2019" = "#66c2a5",  # greenish teal
-  "2020–2024" = "#1f78b4"   # blue
-)
-
-library(ggplot2)
-library(dplyr)
-
-# Filter groups with more than 4 data points
-df_filtered <- df %>%
-  group_by(period) %>%
-  filter(n() > 4) %>%
-  ungroup()
-
-p2 <- ggplot(df, aes(x = h_index, y = latitude, color = period)) +
-  geom_point(size = 2, alpha = 0.7) +
-  geom_smooth(data = df_filtered, method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  scale_color_manual(values = c(
-    "1940–1960" = "#d73027",
-    "1990–1999" = "#fc8d59",
-    "2000–2009" = "#e6b800",
-    "2010–2019" = "#66c2a5",
-    "2020–2024" = "#1f78b4"
-  )) +
-  theme_minimal() +
-  labs(x = "H-index", y = "Latitude", color = "Period")
-
-p2
-
-# ggsave("../figs/hindex_latitude_by_period_ThisBarrLit.pdf", plot = p2, width = 8, height = 6)
+final_plot
+# Save as PDF with specific width and height (in inches)
+#ggsave("../figs/h_index_lm_all_by_time.pdf", plot = final_plot, width = 7, height = 4, units = "in")
 ```
 
+# ANCOVA (Analysis of Covariance)
+
+This allows you to test:
+
+Whether slopes differ significantly by zone vs. time.
+
+Whether overall fit is better when grouping by zone vs. by time.
+
+You can compare models using AIC or adjusted R².
+
+```{r, warning = FALSE}
+# Model 1: Zone as factor
+mod_zone <- lm(latitude ~ h_index * zone, data = countsAllDf)
+
+# Model 2: Time Frame as factor
+mod_time <- lm(latitude ~ h_index * time_frame, data = countsAllDf)
+
+# Compare model fits
+AIC(mod_zone, mod_time)
+summary(mod_zone)
+summary(mod_time)
+```
+
+Repeat with SDM predicted H-index
+```{r, warning = FALSE}
+# Model with zone
+mod_pred_zone <- lm(predicted_h_index ~ h_index * zone, data = countsAllDf)
+summary(mod_pred_zone)
+
+# Model with time frame
+mod_pred_time <- lm(predicted_h_index ~ h_index * time_frame, data = countsAllDf)
+summary(mod_pred_time)
+
+# Compare model fits
+AIC(mod_pred_zone, mod_pred_time)
+summary(mod_pred_zone)
+summary(mod_pred_time)
+```

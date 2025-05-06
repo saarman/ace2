@@ -483,11 +483,6 @@ predicted_h_index <- sapply(1:nrow(sample_buffers), function(i) {
 # Step 4: Add predicted_h_index to countsDf
 countsDf$predicted_h_index <- predicted_h_index
 
-# Step 5: Quick check and save
-(summary_table <- countsDf[, c("site", "latitude", "longitude", "h_index", "predicted_overlap", "predicted_h_index")])
-
-# Save as CSV
-#write.csv(summary_table, file = "../data/summary_hindex_prediction.csv", row.names = FALSE)
 
 ```
 Plot h_index versus latitude, and h_index versus predicted h_index based on SDM habitat MaxEnt models:
@@ -628,16 +623,8 @@ countsDf$HWE_p_value <- hwe_summary$p_value[match(countsDf$site, hwe_summary$sit
 # Add total N per site
 countsDf$N <- countsDf$pp + countsDf$pq + countsDf$qq
 
-# Select and reorder columns
-summary_sites <- countsDf %>%
-  select(site, pp, pq, qq, N, latitude, longitude, h_index, predicted_overlap, predicted_h_index, HWE_p_value)
- 
-# Select and reorder columns
-summary_sites <- countsDf %>%
-  select(site, pp, pq, qq, N, latitude, longitude, h_index, predicted_overlap, predicted_h_index, HWE_p_value)
 
-# Save to CSV
-#write.csv(summary_sites, file = "../data/summary_sites_hindex_overlap_HWE.csv", row.names = FALSE)
+
 
 # Function to pool and run HWE
 pool_hwe_test <- function(df_zone) {
@@ -685,22 +672,22 @@ summary_zones <- countsDf %>%
   group_modify(~ pool_hwe_test(.x)) %>%
   ungroup()
 
-# Save to CSV
-#write.csv(summary_zones, file = "../data/summary_zones_hindex_overlap_HWE.csv", row.names = FALSE)
+# Save summary zones to CSV
+#write.csv(summary_zones, file = "../data/summary_zones_hindex_pred_HWE.csv", row.names = FALSE)
+
  
-summary_zones
+# Select and reorder columns
+summary_sites <- countsDf %>%
+  select(site, pp, pq, qq, N, latitude, longitude, h_index, predicted_h_index, HWE_p_value, predicted_overlap, zone)
+
+# Save summary sites as CSV
+#write.csv(summary_sites, file = "../data/summary_sites_hindex_pred_HWE.csv.csv", row.names = TRUE)
+
 ```
 
-```{r}
-library(ggplot2)
-library(patchwork)
-library(RColorBrewer)
-
-# Plot to PDF
-#pdf("../figs/hindex_vs_lat-n-pred.pdf", width = 8, height = 5)
-
-# Define your own fixed palette
-custom_colors <- c(
+```{r, include=F, eval=F}
+#Aside: bookmark on colors i like
+zach_colors <- c(
   "#1f78b4",  # Anna – dark blue
   "#33a02c",  # Ricei – forest green
   "#6a3d9a",  # Idas – dark purple
@@ -709,66 +696,102 @@ custom_colors <- c(
   "#1dd5c8",  # Alpine – cyan
   "#fb9a99"   # Jackson – pink
 )
+```
 
-# Assign unique colors to each zone
-countsDf$zone <- as.factor(countsDf$zone)  # or use another unique ID
-n_colors <- length(unique(countsDf$zone))
-color_palette <- setNames(custom_colors[1:n_colors], levels(countsDf$zone))
+# Plot h_index versus predicted_h_index, latitude, etc...
 
-# ---------------------------------
-# First plot: H-index vs Latitude
-# ---------------------------------
+```{r, warning=FALSE}
+library(ggplot2)
 library(dplyr)
+library(patchwork)
 
-# For p1 (Latitude vs H-index)
-r2_lat <- countsDf %>%
-  group_by(zone) %>%
-  summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
+# Define hybrid zones:
 
-# p1 with per-zone R2
-p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
-  geom_point(size = 3, alpha = 0.5) +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - as.numeric(factor(zone))*1.5, 
-                               label = paste0("R² = ", round(r2, 2)), color = zone),
-            hjust = 0, size = 3.5, inherit.aes = FALSE) +
-  theme_minimal() +
-  labs(x = "H-index (Ace2)", y = "Latitude", title = "H-index vs Latitude", color = "Zone:") +
-  xlim(0, 1) +
-  scale_color_manual(values = color_palette)
+countsDf$zone <- NULL
+countsDf$zone <- case_when(
+  grepl("CA|OR|WA", countsDf$site) ~ "West Coast",
+  grepl("NJ|MD|MA|DE|CT|NY|VA|FL|QC|DC|TN|GA|NC", countsDf$site) ~ "East Coast",
+  grepl("TX|LA|IL|LA|MN|ON|KS|MO|AR|AL|MS", countsDf$site) ~ "Central",
+  grepl("UT|CO|AZ", countsDf$site) ~ "Mtn/Southwest",
+  #grepl("UT|CO", countsDf$site) ~ "Mountain",
+  TRUE ~ "Other"
+)
 
+# Control order by making it a factor
+countsDf$zone <- factor(countsDf$zone, levels = c("West Coast", "Mtn/Southwest", "Central", "East Coast", "Other"))
+
+
+# Define zone color palette
+zone_colors <- c(
+   "Mtn/Southwest" = "#d73027", 
+   "Central" =   "#6a3d9a", 
+   "West Coast" = "#e6b800", 
+   "East Coast" ="#1f78b4",
+   "Other" = "grey60"           # grey
+)
+
+
+# Create shared color scale
+zone_scale <- scale_color_manual(values = zone_colors, name = "Zone:")
+
+# Shared theme for both plots
+shared_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    legend.position = "bottom",  # <-- Legend at bottom
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 8),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+# ---------------------------------------
+# H-index vs Predicted H-index
 # ---------------------------------
-# Second plot: H-index vs Predicted H-index
-# ---------------------------------
 
-# For p2 (Predicted H-index vs H-index)
 r2_pred <- countsDf %>%
   group_by(zone) %>%
   summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared)
 
-
-# p2 with per-zone R2
 p2 <- ggplot(countsDf, aes(x = h_index, y = predicted_h_index, color = zone)) +
   geom_point(size = 3, alpha = 0.5) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
-  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(factor(zone))*0.05, 
+  geom_text(data = r2_pred, aes(x = 0.05, y = 0.95 - as.numeric(factor(zone)) * 0.05, 
                                 label = paste0("R² = ", round(r2, 2)), color = zone),
             hjust = 0, size = 3.5, inherit.aes = FALSE) +
   theme_minimal() +
-  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", 
-       title = "H-index vs Predicted H-index", color = "Zone:") +
+  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)", title = "Predicted H-index", color = "Zone:") +
   xlim(0, 1) +
   ylim(0, 1) +
-  scale_color_manual(values = color_palette)
-# ---------------------------------
-# Combine side-by-side
-# ---------------------------------
+  scale_color_manual(values = zone_colors)
 
-(p1 | p2) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
 
-countsDf[,c("site","zone","h_index","predicted_h_index")]
+# ---------------------------------------
+#  H-index vs Latitude
+# ---------------------------------------
+r2_lat <- countsDf %>%
+  group_by(zone) %>%
+  summarise(r2 = summary(lm(latitude ~ h_index))$r.squared)
 
-#dev.off()
+p1 <- ggplot(countsDf, aes(x = h_index, y = latitude, color = zone)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.2) +
+  geom_text(data = r2_lat, aes(x = 0.05, y = max(countsDf$latitude, na.rm = TRUE) - as.numeric(factor(zone)) * 1.5, 
+                               label = paste0("R² = ", round(r2, 2)), color = zone),
+            hjust = 0, size = 3.5, inherit.aes = FALSE) +
+  theme_minimal() +
+  labs(x = "H-index (Ace2)", y = "Latitude", title = "Latitude", color = "Zone:") +
+  xlim(0, 1) +
+  scale_color_manual(values = zone_colors)
+
+
+# ---------------------------------------
+# Combine plots with unified legend at bottom
+# ---------------------------------------
+
+# Define the plot object
+final_plot  <- (p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
+
+final_plot
+# Save as PDF with specific width and height (in inches)
+#ggsave("../figs/h_index_lm_This_by_zone.pdf", plot = final_plot, width = 7, height = 4, units = "in")
 ```
-
-Let's repeat some of this with the full dataset? 
