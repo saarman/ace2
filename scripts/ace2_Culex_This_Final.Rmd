@@ -1,7 +1,7 @@
 ---
-title: "Geographic overlap from SDM and Ace2 results"
+title: "Appendix A"
 author: "Norah Saarman"
-date: "2025-04-18"
+date: "2025-05-13"
 output: pdf_document
 ---
 
@@ -23,6 +23,10 @@ library(fields)
 library(mapplots)
 library(clue)
 ```
+  
+# Analysis of Ace2 dataset from this study 
+
+Detailed data are available in Table 1 of the manuscript.
 
 # 1. Load and Process Species Distribution Models (SDMs)
 

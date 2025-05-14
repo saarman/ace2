@@ -1,7 +1,7 @@
 ---
-title: "Historical and Ace2 PCR results, Culex pipiens complex, Barr + Lit + This"
+title: "Appendix B"
 author: "Norah Saarman"
-date: "2024-02-27"
+date: "2025-05-13"
 output: pdf_document
 ---
 
@@ -16,6 +16,10 @@ source("http://membres-timc.imag.fr/Olivier.Francois/POPSutilities.R")
 library(fields)
 library(mapplots)
 ```
+  
+# Analysis of combined data set from this study and the literature from 1940–2024  
+
+Full criteria, references, and dataset details are available in Supplemental Tables 1 and 2.
 
 ## Import species/hybrid countsAll per site
 
