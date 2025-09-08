@@ -703,7 +703,8 @@ zach_colors <- c(
 ```
 
 # Plot h_index versus predicted_h_index, latitude, etc...
-
+  
+## By Zone: H-index vs Predicted H-index and Latitude
 ```{r, warning=FALSE}
 library(ggplot2)
 library(dplyr)
@@ -799,3 +800,98 @@ final_plot
 # Save as PDF with specific width and height (in inches)
 #ggsave("../figs/h_index_lm_This_by_zone.pdf", plot = final_plot, width = 7, height = 4, units = "in")
 ```
+  
+## By NEON Ecozone: H-index vs Predicted H-index and Latitude
+
+```{r neon, warning=FALSE}
+## By NEON Ecozone
+library(sf)
+library(RColorBrewer)
+library(patchwork)
+
+# Load NEON ecozones
+neon_domains <- st_read("~/git/ace2/gis/NEON_Domains.shp", quiet = TRUE)
+
+# ---- Join THIS STUDY sites to NEON ecozones (use countsDf, not countsAllDf)
+df_sf <- st_as_sf(countsDf, coords = c("longitude", "latitude"), crs = 4326)
+df_sf <- st_transform(df_sf, st_crs(neon_domains))
+df_joined <- st_join(df_sf, neon_domains)
+
+# ---- Coordinates back out for plotting
+xy <- st_coordinates(df_joined)
+df_joined$longitude <- xy[,1]
+df_joined$latitude  <- xy[,2]
+
+# ---- Choose ecozone field
+if ("domainName" %in% names(df_joined)) {
+  df_joined$ecozone <- df_joined$domainName
+} else {
+  df_joined$ecozone <- df_joined$domainID
+}
+
+# Drop zones with less than 2 samples
+min_n <- 2
+eco_counts <- df_joined |>
+  dplyr::count(ecozone, name = "n")
+keep_levels <- eco_counts$ecozone[eco_counts$n >= min_n]
+df_plot <- df_joined |>
+  dplyr::filter(ecozone %in% keep_levels)
+
+# Legend labels: "Ecozone (n=)"
+eco_counts_keep <- eco_counts |>
+  dplyr::filter(ecozone %in% keep_levels)
+eco_labels <- setNames(
+  paste0(eco_counts_keep$ecozone, " (n=", eco_counts_keep$n, ")"),
+  eco_counts_keep$ecozone
+)
+
+# Palette sized to remaining ecozones
+eco_levels <- eco_counts_keep$ecozone
+ecozone_colors <- setNames(
+  colorRampPalette(brewer.pal(8, "Set2"))(length(eco_levels)),
+  eco_levels
+)
+
+# ---- Panel 1: H-index vs Predicted H-index
+r2_pred <- df_plot |>
+  dplyr::group_by(ecozone) |>
+  dplyr::summarise(r2 = summary(lm(predicted_h_index ~ h_index))$r.squared, .groups = "drop")
+
+p2 <- ggplot(df_plot, aes(x = h_index, y = predicted_h_index, color = ecozone)) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1.2, show.legend = FALSE) +
+  geom_text(data = r2_pred,
+            aes(x = 0.05, y = 0.95 - as.numeric(factor(ecozone)) * 0.06,
+                label = paste0("R² = ", round(r2, 2)), color = ecozone),
+            hjust = 0, size = 3.2, inherit.aes = FALSE) +
+  labs(x = "H-index (Ace2)", y = "Predicted H-index (from SDM)",
+       title = "Predicted H-index", color = "Ecozone:") +
+  xlim(0, 1) + ylim(0, 1) +
+  scale_color_manual(values = ecozone_colors, labels = eco_labels) +
+  theme_minimal(base_size = 10)
+
+# ---- Panel 2: H-index vs Latitude
+r2_lat <- df_plot |>
+  dplyr::group_by(ecozone) |>
+  dplyr::summarise(r2 = summary(lm(latitude ~ h_index))$r.squared, .groups = "drop")
+
+p1 <- ggplot(df_plot, aes(x = h_index, y = latitude, color = ecozone)) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1.2, show.legend = FALSE) +
+  geom_text(data = r2_lat,
+            aes(x = 0.05,
+                y = max(df_plot$latitude, na.rm = TRUE) - as.numeric(factor(ecozone)) * 1.6,
+                label = paste0("R² = ", round(r2, 2)), color = ecozone),
+            hjust = 0, size = 3.2, inherit.aes = FALSE) +
+  labs(x = "H-index (Ace2)", y = "Latitude",
+       title = "Latitude", color = "Ecozone:") +
+  xlim(0, 1) +
+  scale_color_manual(values = ecozone_colors, labels = eco_labels) +
+  theme_minimal(base_size = 10)
+
+# ---- Combine with unified legend at bottom
+final_plot <- (p2 | p1) + plot_layout(guides = 'collect') & theme(legend.position = "bottom")
+final_plot
+#ggsave("../figs/h_index_lm_This_by_neon.pdf", plot = final_plot, width = 7, height = 4, units = "in")
+```
+Because our new field dataset is small, most NEON ecozones have few samples (often n < 3), which yields unstable fits; we therefore present primary results by broader East/West/Central/Mountain zones where inference is more robust.
