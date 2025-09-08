@@ -3,7 +3,7 @@ Culex pipiens species complex PCR assay results, Ace2 gene, samples from VecTech
 
 # Logging into the CHPC server:  
 One way to get to your CHPC user interface and have access to your home directory and group storage directory:
-https://ondemand.chpc.utah.edu/pun/sys/dashboard/files/fs/uufs/chpc.utah.edu/common/home/u6036559  
+https://ondemand.chpc.utah.edu/pun/sys/dashboard/files/fs/uufs/chpc.utah.edu/common/home/uXXXXXXX  
 ...replacing uXXXXXXX with your U of U user ID.  
 
 # Connecting to RStudio server on CHPC:
